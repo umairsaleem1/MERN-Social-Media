@@ -1,0 +1,93 @@
+.forgot-password-form{
+    width: 650px;
+    height: auto;
+    margin: auto;
+    /* border: 2px solid rgb(235, 234, 234); */
+    border-bottom: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    padding: 15px;
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.forgotpassword-input-container{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    margin-bottom: 15px;
+}
+
+
+.forgotpassword-input-label{
+    font-size: 1rem;
+    position: relative; 
+}
+.forgotpassword-inputBox{
+    width: 100%;
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    outline: none;
+    border: 1px solid rgb(218, 218, 218);
+    padding-left: 45px;
+    font-size: 1.2rem;
+}
+.forgotpassword-inputBox:focus{
+    border: 1px solid green;
+}
+::placeholder{
+    color: rgb(179, 178, 178);
+    font-size: 1rem;
+}
+.forgotpassword-input-icon{
+    position: absolute;
+    left: 15px;
+    top: 34px;
+    font-size: 1.1rem;
+    color: grey;
+}
+
+.forgotpassword-inputBox+span{
+    color: red;
+    font-size: 0.9rem;
+    margin-left: 5px;
+    display: none;
+}
+.forgotpassword-inputBox[focused='true']:invalid +span{
+    display: block;
+    background: #ffcfcc;
+    padding: 3px;
+}
+.forgotpassword-inputBox[focused='true']:invalid{
+    border: 1px solid red;
+    color: red;
+}
+
+
+.forgotpassword-btn{
+    height: 39px;
+    width: 113px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    background: rgb(233, 133, 2);
+    color: white;
+    opacity: 0.7;
+    transition-property: all;
+    transition-duration: 0.2s;
+}
+.forgotpassword-btn:hover{
+    opacity: 1;
+}
+.forgotpassword-btn img{
+    height: 100%;
+    width: 25px;
+}

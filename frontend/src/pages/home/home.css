@@ -1,0 +1,19 @@
+.home-page{
+    margin-top: 75px;
+    width: 100%;
+}
+
+.posts{
+    width: 900px;
+    height: auto;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.home-loader{
+    height: 70px;
+    width: 70px;
+    position: fixed;
+    left: 45%;
+    top: 40%;
+}

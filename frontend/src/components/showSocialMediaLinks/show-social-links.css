@@ -1,0 +1,28 @@
+.social-links-container{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    margin-top: 25px;
+}
+.show-social-media-link{
+    width: 100%;
+    height: 40px;
+    /* border: 1px solid green; */
+    display: flex;
+    align-items: center;
+}
+.show-social-media-link i{
+    font-size: 2rem; 
+    color: blue;
+    margin-right: 30px;
+}
+.show-social-media-link .fa-instagram{
+    color: indianred;
+}
+.show-social-media-link .fa-twitter{
+    color: rgb(86, 180, 235);
+}
+.show-social-media-link a{
+    text-decoration: none;
+    color: blue;
+}

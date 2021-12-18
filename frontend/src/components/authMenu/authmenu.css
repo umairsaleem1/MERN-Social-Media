@@ -1,0 +1,44 @@
+.auth-menu{
+    width: 100%;
+    height: 60px;
+    border-bottom: 2px solid rgb(214, 214, 214);
+    background: white;
+}
+.auth-menu-items{
+    height: 100%;
+    width: 650px;
+    /* border: 1px solid black; */
+    display: flex;
+    align-items: center;
+    margin: auto;
+}
+.auth-menu-link{
+    text-decoration: none;
+    /* border: 1px solid green; */
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0px 15px;
+    color: black;
+    margin-right: 10px;
+}
+
+.auth-menu-link:hover{
+    background: rgb(240, 240, 240);
+    transition-property: all;
+    transition-duration: 0.3s;
+    border-radius: 10px;
+    height: 85%;
+    background-color: #EBEDF0;
+}
+.active-auth-menu-link{
+    color: #1B74E4;
+    border-bottom: 3px solid #1B74E4;
+    font-weight: bold;
+}
+.active-auth-menu-link:hover{
+    background: white;
+    border-radius: 0;
+    height: 100%;
+}

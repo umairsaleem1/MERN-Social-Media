@@ -1,0 +1,96 @@
+.social-modal-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    height: 100%;
+    width: 100%;
+    /* border: 1px solid red; */
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.social-modal{
+    width: 650px;
+    height: 500px;
+    /* border: 2px solid red; */
+    background: white;
+    position: relative;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.social-modal-cross{
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 2rem;
+    color: grey;
+    cursor: pointer;
+}
+.social-modal-cross:hover{
+    color: red;
+}
+.social-modal h1{
+    margin-top: 30px;
+    text-align: center;
+}
+.social-modal h2{
+    text-align: center;
+    margin-top: 10px;
+    color: grey;
+    margin-bottom: 40px;
+}
+
+.social-media-link{
+    width: 80%;
+    height: 40px;
+    margin: auto;
+    margin-bottom: 20px;
+    /* border: 1px solid red; */
+    display: flex;
+    align-items: center;
+}
+.social-media-link i{
+    color: blue;
+    font-size: 2.5rem;
+    margin-right: 30px;
+}
+.social-media-link .fa-instagram{
+    color: indianred;
+    margin-right: 34px;
+}
+.social-media-link .fa-twitter{
+    color: rgb(86, 180, 235);
+}
+.social-media-link input{
+    height: 100%;
+    width: 100%;
+    border: none;
+    outline: none;
+    border: 1px solid rgb(218, 218, 218);
+    font-size: 1.1rem;
+    padding-left: 10px;
+    letter-spacing: 1px
+}
+.social-media-link input:focus{
+    border: 1px solid green;
+}
+
+
+
+.social-media-done-btn{
+    position: absolute;
+    right: 15px;
+    bottom: 20px;
+    padding: 7px 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background: green;
+    color: white;
+    border-radius: 5px;
+}

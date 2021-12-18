@@ -1,0 +1,51 @@
+.header-message{
+    width: 650px;
+    height: 80px;
+    border: 2px solid teal;
+    margin: auto;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: teal;
+    background: rgb(217, 247, 247);
+}
+.message{
+    height: 40px;
+    width: auto;
+    /* border: 1px solid red; */
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.message p{
+    font-size: 0.9rem;
+}
+
+
+
+
+
+
+
+.footer-message{
+    width: 650px;
+    height: 50px;
+    border: 1px solid rgb(165, 164, 158);
+    border-radius: 3px;
+    margin: auto;
+    margin-bottom: 80px;
+    background: rgb(238, 234, 209);
+    opacity: 0.5;
+    padding-left: 30px;
+    display: flex;
+    align-items: center;
+}
+.footer-message p{
+    margin-left: 10px;
+}
+.login-redirect, .signup-redirect{
+    text-decoration: none;
+    color: blue;
+}

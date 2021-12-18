@@ -1,0 +1,122 @@
+.post-single-comment{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    padding: 0 17px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.post-single-comment .single-comment-profile-image{
+    height: 45px;
+    width: 45px;
+    /* border: 1px solid green; */
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-top: 0;
+}
+.post-single-comment .single-comment-profile-image:hover{
+    filter: brightness(95%);
+}
+.single-comment-text{
+    width: calc(100% - 55px);
+    height: auto;
+    /* border: 1px solid blue; */
+    border-radius: 7px;
+    padding: 7px 12px 15px 12px;
+    background: #EBEDF0;
+    position: relative;
+}
+.single-comment-text h4{
+    /* border: 1px solid blue; */
+    display: inline-block;
+}
+.single-comment-text h4:hover{
+    text-decoration: underline;
+    color: blue;
+}
+.single-comment-text p{
+    color:  #050505;
+    margin-top: 8px;
+    line-height: 22px;
+}
+.single-comment-date{
+    position: absolute;
+    right: 45px;
+    top: 7px;
+    color: rgb(99, 99, 99);
+}
+.single-comment-options{
+    position: absolute;
+    right: 12px;
+    top: -5px;
+    color: rgb(99, 99, 99);
+    font-size: 1.7rem;
+    cursor: pointer;
+}
+.single-comment-options-list{
+    width: 200px;
+    height: auto;
+    /* border: 1px solid red; */
+    border-radius: 7px;
+    padding: 10px;
+    position: absolute;
+    z-index: 15;
+    right: 14px;
+    top: 30px;
+    background: white;
+    --T68779821: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.single-comment-options-list div{
+    width: 100%;
+    height: 40px;
+    /* border: 1px solid red; */
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: #050505;
+    transition-property: all;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+.single-comment-options-list div:hover{
+    background: #EBEDF0;
+}
+.single-comment-options-list div i{
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+.single-comment-options-list div p{
+    padding-bottom: 5px;
+}
+
+
+
+.single-comment-likes{
+    padding-left: 70px;
+    margin-top: 5px;
+    display: flex;
+}
+.single-comment-likes span{
+    cursor: pointer;
+    margin-right: 20px;
+    /* border: 1px solid green; */
+    padding: 2px 4px;
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.single-comment-likes span:hover{
+    background: #EBEDF0;
+}
+.single-comment-likes p i{
+    background: red;
+    color: white;
+    padding: 5px;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    /* border: 1px solid blue; */
+    border-radius: 50%;
+    font-size: 0.7rem;
+}
