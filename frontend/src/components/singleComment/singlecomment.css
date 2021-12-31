@@ -40,12 +40,7 @@
     margin-top: 8px;
     line-height: 22px;
 }
-.single-comment-date{
-    position: absolute;
-    right: 45px;
-    top: 7px;
-    color: rgb(99, 99, 99);
-}
+
 .single-comment-options{
     position: absolute;
     right: 12px;
@@ -93,6 +88,20 @@
 }
 
 
+.post-single-comment .single-comment-image-wrapper{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    margin-top: 3px;
+}
+.post-single-comment .single-comment-image{
+    /* border: 1px solid green; */
+    margin-top: 0;
+    width: 250px;
+    height: auto;
+    margin-left: 55px;
+    border-radius: 15px;
+}
 
 .single-comment-likes{
     padding-left: 70px;
@@ -109,6 +118,10 @@
 }
 .single-comment-likes span:hover{
     background: #EBEDF0;
+}
+.single-comment-likes p{
+    /* border: 1px solid red; */
+    margin-right: 20px;
 }
 .single-comment-likes p i{
     background: red;

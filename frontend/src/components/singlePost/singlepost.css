@@ -80,6 +80,7 @@
     border-radius: 7px;
     padding: 10px;
     position: absolute;
+    z-index: 30;
     right: 17px;
     top: 45px;
     background: white;
@@ -139,6 +140,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 .post-stats .post-likes-count{
     /* border: 1px solid green; */
@@ -173,6 +175,58 @@
     text-decoration: underline;
     color: blue;
 }
+
+.post-liked-persons{
+    width: 200px;
+    height: 200px;
+    /* border: 1px solid green; */
+    position: absolute;
+    z-index: 20;
+    top: -205px;
+    left: 17px;
+    background: white;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    overflow: auto;
+}
+
+.post-liked-persons .post-liked-person{
+    width: 100%;
+    height: 40px;
+    /* border: 1px solid red; */
+}
+.post-liked-persons .post-liked-person div{
+    height: 100%;
+    width: 100%;
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    /* border: 1px solid red; */
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.post-liked-persons .post-liked-person div:hover{
+    background: #EBEDF0;
+    background: #f0f2f5;
+}
+.post-liked-persons .post-liked-person div img{
+    height: 100%;
+    width: 30px;
+    /* border: 1px solid green; */
+    border-radius: 50%;
+    margin-top: 0;
+    margin-right: 5px;
+}
+.post-liked-persons .post-liked-person div h5{
+    margin-top: 5px;
+    color: rgb(53, 116, 175);
+}
+
+
+
+
 
 .post-stats-separator{
     /* border: 1px solid blue; */
@@ -218,7 +272,7 @@
 .post-comments-section{
     width: 100%;
     height: auto;
-    border: 1px solid red;
+    /* border: 1px solid red; */
 }
 .mycomment-div{
     width: 100%;
@@ -346,7 +400,6 @@
 
 
 .mycomment-div form button{
-    padding: 7px 15px;
     background: #1B74E4;
     color: white;
     border: none;
@@ -360,9 +413,18 @@
     transition-property: all;
     transition-duration: 0.3s;
     height: 40px;
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .mycomment-div form button:hover{
     background: #0c4a96;
+}
+.mycomment-div form button img{
+    margin-top: 0;
+    height: 25px;
+    width: 25px;
 }
 
 

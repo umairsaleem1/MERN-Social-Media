@@ -20,7 +20,10 @@ const postSchema = new mongoose.Schema({
     postAuthor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    postLikes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true}],
+    postComments: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}]
+    
 }, {timestamps:true})
 
 const Post = mongoose.model('Post', postSchema);

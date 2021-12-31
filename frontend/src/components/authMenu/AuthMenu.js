@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import './authmenu.css';
 
 
-const AuthMenu = ()=>{
+const AuthMenu = ()=>{ 
     return(
         <div className='auth-menu'>
             <div className='auth-menu-items'>

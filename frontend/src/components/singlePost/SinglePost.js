@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
-import formatDistance from 'date-fns/formatDistance';
+import TimeAgo from 'timeago-react';
+import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
+import fetchPosts from '../../utils/fetchPosts';
 import SingleComment from '../singleComment/SingleComment';
 import EditPostModal from '../editPostModal/EditPostModal';
+import Context from '../../context/Context';
 import './singlepost.css';
+import 'react-toastify/dist/ReactToastify.css';
 
-const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
-    const { postText, postMedia, postMediaType, postLocation, postAuthor, createdAt, updatedAt } = post;
+const SinglePost = ( { post, loggedInUser } )=>{
+    const { _id, postText, postMedia, postMediaType, postLocation, postAuthor, postLikes, postComments, createdAt } = post;
+    const { profileImage, username, role } = loggedInUser;
 
     // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
@@ -19,8 +24,22 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
     // state to show or hide post options list
     const [showPostOptions, setShowPostOptions] = useState(false);
 
-    // state that will tell either the post is liked or not
-    const [liked, setLiked] = useState(false);
+    // var that will tell either the post is liked or not by the currently loggedIn user
+    const [liked, setLiked] = useState(()=>{
+        return postLikes.some((postLike)=>{
+            return postLike._id===loggedInUser._id;
+        })
+    });
+
+    // state that will contain a boolean to either show or hide the post likes persons list
+    const [showLikesList, setShowLikesList] = useState(false);
+
+    // using custom hook useClickOutside for postOptions list
+    const likesList = useClickOutside(()=>{
+        setTimeout(()=>{
+            setShowLikesList(false);
+        }, 200)
+    }, showLikesList);
 
     const [myComment, setMyComment] = useState('');
 
@@ -44,15 +63,32 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
     }, isPostOptionsBtnVisible);
 
 
+    // state that will contian boolean either to show the post edit modal or hide
     const [showEditPostModal, setShowEditPostModal] = useState(false);
+
+
+    // getting values & methods from global state
+    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
+
+    // getting user's id from url(if present)
+    const { profileUserId } = useParams();
+
+    // state to hide or show loader from post comment button
+    const [showLoader, setShowLoader] = useState(false); 
+
+
+
+
+
+
 
 
     // changing the button visible state if the user is or the author of the post or is an admin of the app
     useEffect(()=>{
-        if(loggedInUserRole==='admin' || postAuthor.username===loggedInUsername){
+        if(role==='admin' || postAuthor.username===username){
             setIsPostOptionsBtnVisible(true);
         }
-    }, [loggedInUsername, loggedInUserRole, postAuthor.username])
+    }, [username, role, postAuthor.username])
     
 
 
@@ -96,22 +132,184 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
 
 
     const removeMyCommentImage = ()=>{
-        setSelectedFile(null);
+        setSelectedFile('');
         setPreview(undefined);
     }
 
+
+    // handler that will be called when the user clicks on post delete button
+    const handleDeletePost = async ()=>{
+        let errorMessage;
+        try{
+            // making request to backend to delete the post
+            const res = await fetch(`/posts/${_id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if(res.status===401){
+                errorMessage = 'User is not authenticated, please login first'
+                throw new Error(res.statusText);
+            }
+            else if(!res.ok){
+                errorMessage = 'Oops! Some problem occurred';
+                throw new Error(res.statusText);
+            }
+
+            const data = await res.json();
+
+            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            if(profileUserId){
+                fetchPosts(setProfilePosts, profileUserId);
+            }else{
+                fetchPosts(setPosts, profileUserId);
+            }
+
+            toast.success(data.message, {
+                position:"top-center",
+                autoClose:3000
+            });
+
+        }catch(e){
+            toast.error(errorMessage, {
+                position:"top-center",
+                autoClose:3000
+            });
+            console.log(e);
+        }
+    }
+
+
+
+
+
+
+    // handler that will be called when the user clicks on post like button
+    const handlePostLike = async ()=>{
+        try{
+            // making request to backend to add or remove like of currently loggedIn user
+            const res = await fetch(`/posts/${_id}?liked=${!liked}`);
+            if(!res.ok){
+                throw new Error(res.statusText);
+            }
+        
+            await res.json();
+
+            // if liked then remove(false) it, otherwise add(true) it in state variable
+            if(liked===true){
+                let arr = [];
+                for (let postLike of postLikes){
+                    arr.push(postLike._id);
+                }
+                let ind = arr.indexOf(loggedInUser._id);
+                postLikes.splice(ind,1);
+            }else{
+                postLikes.push({_id:loggedInUser._id});
+            }
+            setLiked(!liked);
+
+            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            if(profileUserId){
+                fetchPosts(setProfilePosts, profileUserId);
+            }else{
+                fetchPosts(setPosts, profileUserId);
+            }
+           
+        }catch(e){
+            console.log(e);
+        }
+        
+    }
+
+
+
+
+    // handler that will be called when the any user posts a new comment
+    const handlePostCommentSubmit = async (e)=>{
+        e.preventDefault();
+        let errorMessage;
+
+        // checking the user has filled the required fields for creating a new comment
+        if(!myComment && !selectedFile){
+            toast.error('Please enter something to make a comment!', {
+                position:"top-center",
+                autoClose:3000
+            });
+            return;
+        }
+
+        setShowLoader(true);
+        try{
+            // creating formdata bcz multer only understands formData
+            let formData = new FormData();
+            formData.append('commentText', myComment);
+            formData.append('commentImage', selectedFile);
+
+            // making request to backend to create a new comment
+            const res = await fetch(`/posts/${_id}/comments`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData
+            });
+
+            if(res.status===401){
+                errorMessage = 'You are not authenticated, please login first to make comment'
+                throw new Error(res.statusText);
+            }
+            else if(res.status===400){
+                errorMessage = 'Please fill out the required fields to make comment';
+                throw new Error(res.statusText);
+            }
+            else if(!res.ok){
+                errorMessage = 'Oops! some problem occurred';
+                throw new Error(res.statusText);
+            }
+
+            const data = await res.json();
+
+            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            if(profileUserId){
+                fetchPosts(setProfilePosts, profileUserId);
+            }else{
+                fetchPosts(setPosts, profileUserId);
+            }
+
+            //reseting values
+            setMyComment('');
+            setSelectedFile('');
+            setPreview(undefined);
+            setShowLoader(false);
+
+            toast.success(data.message, {
+                position:"top-center",
+                autoClose:3000
+            });
+
+            
+        }catch(e){
+            setShowLoader(false);
+            toast.error(errorMessage, {
+                position:"top-center",
+                autoClose:3000
+            });
+            console.log(e);
+        }
+    }
+
+
     return(
+        <>
         <div className='singlepost'>
             <div className='userinfo'>
                 <span className='userinfo-wrapper'>
-                    <Link to='/profile'>
+                    <Link to={`/profile/${postAuthor._id}`}>
                         <motion.img src={postAuthor.profileImage} alt='profile' 
                             initial={{scale:1}}
                             whileTap={{scale:0.85}}
                         />
                     </Link>
                     <span>
-                        <Link to='/profile' className='link-text-decoration'>
+                        <Link to={`/profile/${postAuthor._id}`} className='link-text-decoration'>
                             <h4>
                                 {
                                     postAuthor.name.split(' ').map((item)=>{
@@ -120,20 +318,12 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                                 }
                             </h4>
                         </Link>
-                        <span>
-                            {
-                                createdAt===updatedAt
-                                ?
-                                formatDistance(new Date(createdAt), new Date(), { addSuffix: true })
-                                :
-                                formatDistance(new Date(createdAt), new Date(), { addSuffix: true }) + '(edited)'
-                            }
-                        </span>
+                        <span> <TimeAgo datetime={createdAt}/> </span>
                     </span>
                 </span>
 
                 {
-                    loggedInUserRole==='admin' || postAuthor.username===loggedInUsername
+                    role==='admin' || postAuthor.username===username
                     ?
                     <motion.span className='post-options' onClick={()=>setShowPostOptions(!showPostOptions)} style={showPostOptions ? {background:'#E7F3FF', color:'blue'} : {background:'#E4E6EB', color:'black'}} ref={postOptions} id='postOptions'
                         initial={{scale:1}}
@@ -151,7 +341,7 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                         <i className="far fa-edit" style={{color:'green'}}></i>
                         <p>Edit post</p>
                     </div>
-                    <div>
+                    <div onClick={handleDeletePost}>
                         <i className="far fa-trash-alt" style={{color:'red'}}></i>
                         <p>Delete post</p>
                     </div>
@@ -182,7 +372,7 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                 ?
                     postMediaType==='img'
                     ?
-                    <img src={postMedia} alt='post' />
+                    <img src={postMedia} alt='post'/>
                     :
                     <video controls>
                         <source src={postMedia} ></source>
@@ -191,21 +381,62 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                 null
             }
             <div className='post-stats'>
-                <span className='post-likes-count'>
-                    <span><i className="fas fa-heart"></i></span>
-                    {
-                        liked
-                        ?
-                        <p>&nbsp;&nbsp;You and 30 others</p>
-                        :
-                        <p>&nbsp;&nbsp;30</p>
-                    }
-                </span>
-                <p className='post-comments-count' onClick={()=> setShowCommentsSection(!showCommentsSection)}>25 comments</p>
+                {
+                    postLikes.length
+                    ?
+                    <span className='post-likes-count'>
+                        <span onClick={()=>setShowLikesList(!showLikesList)}><i className="fas fa-heart"></i></span>
+                        {
+                            <p onClick={()=>setShowLikesList(!showLikesList)}>&nbsp;&nbsp;{postLikes.length}</p>
+                        }
+                    </span>
+                    :
+                    <span></span>
+                }
+                {
+                    postComments.length
+                    ?
+                    <p className='post-comments-count' onClick={()=> setShowCommentsSection(!showCommentsSection)}>
+                        {
+                            postComments.length===1
+                            ?
+                            postComments.length+' comment'
+                            :
+                            postComments.length+' comments'
+                        }
+                    </p>
+                    :
+                    null
+                }
+
+                {
+                    showLikesList && <div className='post-liked-persons' ref={likesList}>
+                            <div className='post-liked-person'>
+                                {
+                                    postLikes.map((postLike)=>{
+                                        return(
+                                            <Link to={`profile/${postLike._id}`} className='link-text-decoration' key={postLike._id}>
+                                                <div>
+                                                    <img src={postLike.profileImage} alt='profile' />
+                                                    <h5>
+                                                        {
+                                                            postLike.name.split(' ').map((item)=>{
+                                                                return item[0].toUpperCase()+item.slice(1)
+                                                            }).join(' ')
+                                                        }
+                                                    </h5>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })   
+                                }
+                            </div>
+                    </div>
+                }
             </div>
             <div className='post-stats-separator'><hr/></div>
             <div className='post-reactions'>
-                <motion.div onClick={()=>setLiked(!liked)} style={liked ? {color:'blue'} : null}
+                <motion.div onClick={handlePostLike} style={liked ? {color:'blue'} : null}
                     initial={{scale:1}}
                     whileTap={{scale:0.85}}
                 >
@@ -235,11 +466,11 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
             {
                 showCommentsSection && <div className='post-stats-separator'><hr/></div>
             }
-            {
+            { 
                 showCommentsSection && <div className='post-comments-section'>
                     <div className='mycomment-div'>
-                        <form>
-                            <Link to='/profile'><img src='/images/sociallogo.png' alt='profile' className='profile-image'/></Link>
+                        <form onSubmit={handlePostCommentSubmit} encType='multipart/form-data'>
+                            <Link to={`profile/${loggedInUser._id}`}><img src={profileImage} alt='profile' className='profile-image'/></Link>
                             <input type='text' placeholder='Add a comment...' className='mycomment-textInput' ref={myCommentInputRef} value={myComment} onChange={(e)=> setMyComment(e.target.value)} />
 
                             <span title='Add an emoji' onClick={()=> setShowPicker(!showPicker)} ><i className="far fa-smile"></i></span>
@@ -251,7 +482,7 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                             {
                                 showPicker && <Picker pickerStyle={{ position: 'absolute', right:17, top:-330}} onEmojiClick={onEmojiClick}/>
                             }
-                            <input type='file' className='mycomment-Fileinput' name='myCommentImage' accept='image/*' onChange={onSelectingFile} />
+                            <input type='file' className='mycomment-Fileinput' name='commentImage' accept='image/*' onChange={onSelectingFile} />
                             {
                                 selectedFile && <div className='mycomment-image-preview'>
                                     <motion.div onClick={removeMyCommentImage}
@@ -275,19 +506,39 @@ const SinglePost = ( { post, loggedInUsername, loggedInUserRole } )=>{
                                     initial={{scale:1, opacity:0}}
                                     animate={{opacity:1}}
                                     whileTap={{scale:0.85}}
-                                >Post</motion.button>
+                                >
+                                    {
+                                        showLoader
+                                        ?
+                                        <img src='/images/spiner2.gif' alt='loader' />
+                                        :
+                                        <>
+                                        Post
+                                        </>
+                                    }
+                                </motion.button>
                                 :
                                 null
                             }
                         </form>
                     </div>
-                    <div className='post-comments'>
-                        <SingleComment/>
-                        <SingleComment/>
+                    <div className='post-comments' style={postComments.length ? null : {marginTop: '10px'}}>
+                        {
+                            postComments.length
+                            ?
+                            postComments.map((postComment)=>{
+                                return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor}/>
+                            })
+                        
+                            :
+                            null
+                        }
                     </div>
                 </div>
             }
         </div>
+        <ToastContainer theme='colored'/>
+        </>
     );
 }
 

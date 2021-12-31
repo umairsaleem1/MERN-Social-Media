@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
+import Context from '../../context/Context';
+import fetchPosts from '../../utils/fetchPosts';
 import './createpost.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CreatePost = ( {userImage} )=>{
+const CreatePost = ( { userImage, userId } )=>{
 
     // state that will contain the text input field value
     const [val, setVal] = useState('');
@@ -32,8 +34,13 @@ const CreatePost = ( {userImage} )=>{
 
     // reference of textInuput field
     const postTextInputRef = useRef();
-    
-    
+
+    // getting values & methods from global state
+    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
+
+    // getting user's id from url(if present)
+    const { profileUserId } = useParams();
+
 
     // create a preview(set url of selected file) , whenever selected file is changed
     useEffect(()=>{
@@ -134,6 +141,13 @@ const CreatePost = ( {userImage} )=>{
             setPreview(undefined);
             setMedia('');
 
+            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            if(profileUserId){
+                fetchPosts(setProfilePosts, profileUserId);
+            }else{
+                fetchPosts(setPosts, profileUserId);
+            }
+
             toast.success(data.message, {
                 position:"top-center",
                 autoClose:3000
@@ -155,7 +169,7 @@ const CreatePost = ( {userImage} )=>{
         <div className='create-post'>
             <form onSubmit={handlePostSubmit} encType='multipart/form-data'>
                 <div className='create-post-top'>
-                    <Link to='/profile'>
+                    <Link to={`/profile/${userId}`}>
                         <motion.img src={userImage} alt='profile' 
                             initial={{scale:1}}
                             whileTap={{scale:0.85}}

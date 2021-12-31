@@ -16,11 +16,13 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: 'Email is required',
-        unique: true
+        unique: true,
+        select: false
     },
     password: {
         type: String,
-        required: 'Password is required'
+        required: 'Password is required',
+        select: false
     },
     username: {
         type: String,
@@ -33,6 +35,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['admin', 'user'],
         default: 'user'
+    },
+    coverImage: {
+        type: String
+    },
+    coverImage_cloudinaryId:{
+        type: String
     }
 });
 

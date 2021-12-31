@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useClickOutside } from '../../utils/useClickOutside';
+import Context from '../../context/Context';
 import './navbar.css';
 
 const Navbar = ()=>{
+
+    // getting values & methods from global state
+    const [, , user] = useContext(Context);
 
     // state to show or hide the expanded search box
     const [expandSearch, setExpandSearch] = useState(false);
@@ -66,10 +70,16 @@ const Navbar = ()=>{
 
 
             <div className='navbar-profile-container'>
-                <Link to='/profile' className='link-text-decoration'>
+                <Link to={`/profile/${user._id}`} className='link-text-decoration'>
                     <div className='navbar-profile-image'>
-                        <img src='/images/sociallogo.png' alt='user profile' />
-                        <h3>Ahmad</h3>
+                        <img src={user.profileImage} alt='user profile' />
+                        <h3>
+                            {
+                                user.name.split(' ').map((item)=>{
+                                    return item[0].toUpperCase()+item.slice(1)
+                                }).join(' ')
+                            }
+                        </h3>
                     </div>
                 </Link>
                 <motion.div className='profile-dropdown tooltip' onClick={()=>setShowDropdown(!showDropdown)} id='dropdown' style={showDropdown ? {background:'#E7F3FF', color:'blue'} : {background:'#E4E6EB', color:'black'}}
@@ -80,11 +90,17 @@ const Navbar = ()=>{
                     <span className='tooltiptext' style={{marginLeft:-50}}>Account</span>
                 </motion.div>
                 <div className='profile-dropdown-items' style={showDropdown ? {visibility:'visible'} : {visibility:'hidden'}} ref={dropDown}>
-                    <Link to='/profile' className='link-text-decoration'>
+                    <Link to={`/profile/${user._id}`} className='link-text-decoration'>
                         <div className='dropdown-profile-div'>
-                            <img src='/images/sociallogo.png' alt='profile' />
+                            <img src={user.profileImage} alt='profile' />
                             <div>
-                                <h3>Ahmad Jameel</h3>
+                                <h3>
+                                    {
+                                    user.name.split(' ').map((item)=>{
+                                        return item[0].toUpperCase()+item.slice(1)
+                                    }).join(' ')
+                                    }
+                                </h3>
                                 <p>See your profile</p>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-.edit-post-modal-container{
+.edit-comment-modal-container{
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     justify-content: center;
     align-items: center;
 }
-.edit-post-modal{
+.edit-comment-modal{
     width: 500px;
     height: auto;
     /* border: 2px solid red; */
@@ -21,17 +21,18 @@
     padding: 17px 0;
     box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
-.edit-post-heading{
-    padding: 0 17px; 
+
+.edit-comment-heading{
+    padding: 0 17px;
 }
-.edit-post-heading h2{
+.edit-comment-heading h2{
     text-align: center;
     font-weight: 500;
     color: #050505;
     margin-bottom: 20px;
     margin-top: 5px;
 }
-.edit-post-modal .cross{
+.edit-comment-modal .cross{
     position: absolute;
     right: 20px;
     top: 13px;
@@ -47,11 +48,11 @@
     transition-duration: 0.3s;
     background: #e4e6eb;
 }
-.edit-post-modal .cross:hover{
+.edit-comment-modal .cross:hover{
     background: #dbdcdf;
     color: red;
 }
-.edit-post-modal hr{
+.edit-comment-modal hr{
     margin-bottom: 15px;
     opacity: 0.3;
     background: grey;
@@ -60,9 +61,7 @@
 
 
 
-
-
-.edit-post-top{
+.edit-comment-top{
     width: 100%;
     height: 100px;
     /* border: 1px solid red; */
@@ -70,7 +69,7 @@
     align-items: center;
     padding: 0 17px;
 }
-.edit-post-modal .edit-post-top img{
+.edit-comment-modal .edit-comment-top img{
     height: 45px;
     width: 45px;
     border-radius: 50%;
@@ -78,10 +77,10 @@
     margin-top: 0;
     margin-right: 10px;
 }
-.edit-post-modal .edit-post-top img:hover{
+.edit-comment-modal .edit-comment-top img:hover{
     filter: brightness(95%);
 }
-.edit-post-modal .edit-post-top textarea{
+.edit-comment-modal .edit-comment-top textarea{
     height: 100%;
     width: calc(100% - 55px); 
     border: none;
@@ -95,41 +94,37 @@
     transition-property: all;
     transition-duration: 0.3s;
 }
-.edit-post-modal .edit-post-top textarea:hover{
+.edit-comment-modal .edit-comment-top textarea:hover{
     background: #e1e3e6;
 }
 
 
 
-.edit-post-media-preview-wrapper{
+
+.edit-comment-image-preview-wrapper{
     width: 100%;
     height: auto;
     margin-bottom: 15px;
 }
-.edit-post-media-image-preview{
+.edit-comment-image-preview{
     width: 100%;
     height: auto;
     /* border: 1px solid red; */
 }
-.edit-post-media-video-preview{
-    width: 100%;
-    height: auto;
-}
 
 
 
-
-.edit-post-bottom{
+.edit-comment-bottom{
     width: 100%;
     height: 50px;
     /* border: 1px solid red; */
     margin-top: 15px;
-    padding: 0px 17px;
+    padding: 0px 97px;
     display: flex;
     justify-content: space-between;
     position: relative;
 }
-.edit-post-bottom span{
+.edit-comment-bottom span{
     height: 100%;
     width: auto;
     /* border: 1px solid blue; */
@@ -139,40 +134,40 @@
     cursor: pointer;
     position: relative;
 }
-.edit-post-bottom span:hover{
+.edit-comment-bottom span:hover{
     transition-property: all;
     transition-duration: 0.3s;
     border-radius: 7px;
     background-color: #EBEDF0;
 }
-.edit-post-bottom span .postImage, .edit-post-bottom span .postVideo{
+.edit-comment-bottom span .commentImage{
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: 0;
     cursor: pointer;
 }
-.edit-post-image-icon{
+.edit-comment-image-icon{
     color: #70b5f9;
 }
-.edit-post-video-icon{
-    color: #7fc15e;
-}
-.edit-post-bottom span p{
+
+.edit-comment-bottom span p{
     margin-left: 5px;
+    margin-top: 0;
     font-weight: 500;
     color: rgba(0,0,0,0.6);
 }
 
 
 
-.edit-post-btn-wrapper{
+
+.edit-comment-btn-wrapper{
     width: 100%;
     height: 40px;
     padding: 0 17px;
     margin-top: 15px;
 }
-.edit-post-btn{
+.edit-comment-btn{
     width: 100%;
     height: 100%;
     font-size: 1.1rem;
@@ -191,10 +186,10 @@
     justify-content: center;
 }
 
-.edit-post-btn:hover{
+.edit-comment-btn:hover{
     background: #0c4a96;
 }
-.edit-post-btn-wrapper .edit-post-btn img{
+.edit-comment-btn-wrapper .edit-comment-btn img{
     margin-top: 0;
     height: 30px;
     width: auto;

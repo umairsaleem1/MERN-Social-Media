@@ -101,7 +101,6 @@ router.post('/signup', upload.single('profileImage'), async (req, res)=>{
 router.post('/login', async (req, res)=>{
     try{
         const { email, password } = req.body;
-        
         // Making sure the user not left any field empty
         if(!email || !password){
             return res.status(400).json({
@@ -110,7 +109,7 @@ router.post('/login', async (req, res)=>{
         }
 
         // checking the user exists or not with the provided email
-        const user = await User.findOne({email:email});
+        const user = await User.findOne({email:email}).select('+password');
         if(!user){
             return res.status(401).json({
                 message: 'Invalid credentials'
