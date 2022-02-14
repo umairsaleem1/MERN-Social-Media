@@ -179,7 +179,7 @@ const Signup = ()=>{
                         <input type='email' className='signup-inputBox' placeholder='Email' name='email' value={values.email} onChange={handleFieldValues} required pattern='[a-z0-9]+@[a-z]+\.[a-z]{2,3}' onBlur={handleFieldBlur} focused={focused.email}/>
                         <span>It should be a valid email address!</span>
                     </div>
-
+ 
                     <div className='signup-input-container'>
                         <label className='signup-input-label'>Password <sup style={{color:'red'}}>*</sup><i className="fas fa-eye signup-input-icon" onClick={togglePasswordVisibility} id='pass-show'></i><i className="fas fa-eye-slash signup-input-icon" id='pass-hide' ref={passHide} onClick={togglePasswordVisibility}></i></label>
                         <input type='password' className='signup-inputBox' placeholder='Password' ref={passRef} name='password' value={values.password} onChange={handleFieldValues} required pattern='^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$' onBlur={handleFieldBlur} focused={focused.password}/>
@@ -210,7 +210,7 @@ const Signup = ()=>{
                         <textarea placeholder='bio...' name='bio' value={values.bio} onChange={handleFieldValues}></textarea>
                     </div>
 
-                    <ShowSocialLinks socialLinks={socialLinks}/>
+                    <ShowSocialLinks socialLinks={socialLinks} existingLinks={{}}/>
                     <motion.button className='signup-social-links-btn' onClick={handleSocialBtnClick}
                         initial={{scale:1}}
                         whileTap={{scale:0.95}}

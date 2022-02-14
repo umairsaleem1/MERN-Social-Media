@@ -103,7 +103,7 @@
     border-radius: 15px;
 }
 
-.single-comment-likes{
+.single-comment-likes{ 
     padding-left: 70px;
     margin-top: 5px;
     display: flex;
@@ -122,6 +122,8 @@
 .single-comment-likes p{
     /* border: 1px solid red; */
     margin-right: 20px;
+    position: relative;
+    cursor: pointer;
 }
 .single-comment-likes p i{
     background: red;
@@ -132,4 +134,52 @@
     /* border: 1px solid blue; */
     border-radius: 50%;
     font-size: 0.7rem;
+}
+
+.comment-liked-persons{
+    width: 200px;
+    height: 200px;
+    /* border: 1px solid green; */
+    position: absolute;
+    z-index: 20;
+    top: -205px;
+    left: 17px;
+    background: white;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    overflow: auto;
+}
+
+.comment-liked-persons .comment-liked-person{
+    width: 100%;
+    height: 40px;
+    /* border: 1px solid red; */
+}
+.comment-liked-persons .comment-liked-person div{
+    height: 100%;
+    width: 100%;
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    /* border: 1px solid red; */
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.comment-liked-persons .comment-liked-person div:hover{
+    background: #EBEDF0;
+    background: #f0f2f5;
+}
+.comment-liked-persons .comment-liked-person div img{
+    height: 100%;
+    width: 30px;
+    /* border: 1px solid green; */
+    border-radius: 50%;
+    margin-top: 0;
+    margin-right: 5px;
+}
+.comment-liked-persons .comment-liked-person div h5{
+    margin-top: 5px;
+    color: rgb(53, 116, 175);
 }

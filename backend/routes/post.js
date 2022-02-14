@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Post = require('../models/post');
 const Comment = require('../models/comment');
+const User = require('../models/user');
 const auth = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
 const cloudinary = require('../utils/cloudinary');
@@ -37,10 +38,11 @@ router.post('/posts', auth, upload.single('postMedia'), async (req, res)=>{
         });
     
         // saving post in database
-        await post.save();
+        const saved = await post.save();
+        const savedPost = await Post.findOne({_id:saved._id}).populate('postAuthor');
 
         res.status(201).json({
-            message: 'Post Created successfully...'
+            createdPost: savedPost
         });
     }catch(e){
         console.log(e);
@@ -55,24 +57,38 @@ router.post('/posts', auth, upload.single('postMedia'), async (req, res)=>{
 
  
 
-// Get all posts
+// Get all posts to whome the loggedIn user follows or his own created
 router.get('/posts', auth, async (req, res)=>{
     try{
-        const { profileUserId } = req.query; 
+        const { profileUserId, pageNo } = req.query; 
+
+        let skips;
+        // setting no of posts to skip
+        if(Number(pageNo)===1){
+            skips = 0;
+        }else{
+            skips = (pageNo-1)*10;
+        }
+
 
         let posts;
         // if profileUserId is provided(means request made from profile page then in response send on his posts
         if(profileUserId){
-            posts = await Post.find({postAuthor:profileUserId}).populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'});
+            posts = await Post.find({postAuthor:profileUserId}).populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'}).skip(skips).limit(10).sort({createdAt:-1});
         }else{
-            posts = await Post.find().populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'}); 
+            // following is an array who's items are id's of user's to whom the currently loggedIN user is following and including it's own id also
+            let following;
+            const user = await User.findOne({_id:req.id});
+            following = [...user.following, req.id];
+
+            posts = await Post.find({postAuthor:{$in:following}}).populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'}).skip(skips).limit(10).sort({createdAt:-1});  
         }
 
         res.status(200).json({
             posts:posts
         });
-    }catch(e){
-        res.status(500).json({
+    }catch(e){ 
+        res.status(500).json({  
             message: 'Some problem occurred'
         });
     }
@@ -97,7 +113,7 @@ router.put('/posts/:id', auth,  upload.single('postMedia'), async (req, res)=>{
         }
 
         // uploading post media to cloudinary
-        let result = {
+        let result = { 
             secure_url: '',
             public_id: ''
         }
@@ -117,16 +133,20 @@ router.put('/posts/:id', auth,  upload.single('postMedia'), async (req, res)=>{
         const updatingPost = await Post.findByIdAndUpdate({_id:id}, {$set:dataToUpdate});
 
         // deleting the non edited version post's postMedia(image or video) from cloudinary if the original post has any
-        if(updatingPost.cloudinaryId.length){
-            if(updatingPost.postMediaType==='img'){
-                await cloudinary.uploader.destroy(updatingPost.cloudinaryId);
-            }else{
-                await cloudinary.uploader.destroy(updatingPost.cloudinaryId, { resource_type: 'video' } )
+        if(result.secure_url.length){
+            if(updatingPost.cloudinaryId.length){
+                if(updatingPost.postMediaType==='img'){
+                    await cloudinary.uploader.destroy(updatingPost.cloudinaryId);
+                }else{
+                    await cloudinary.uploader.destroy(updatingPost.cloudinaryId, { resource_type: 'video' } )
+                }
             }
         }
 
+        const updatedPost = await Post.findOne({_id:id}).populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'});
+
         res.status(200).json({
-            message: 'Post updated successfully...'
+            updatedPost: updatedPost
         });
     }catch(e){
         res.status(500).json({
@@ -190,13 +210,15 @@ router.get('/posts/:id', auth, async (req, res)=>{
         if(liked==='true'){
             // if user liked the post, then adding the user to post likes list
             await Post.findByIdAndUpdate({_id:id}, {$push:{postLikes:req.id}});
+            
             res.status(200).json({
-                message: 'Post like has been added'
+                message:'Post has been liked'
             });
   
         }else if(liked==='false'){
             // if user removed liked from post, then deleting the user from post likes list  
             await Post.findByIdAndUpdate({_id:id}, {$pull:{postLikes:req.id}});
+            
             res.status(200).json({
                 message: 'Post like has been removed'
             });
@@ -204,7 +226,7 @@ router.get('/posts/:id', auth, async (req, res)=>{
 
     }catch(e){
         res.status(500).json({
-            message: 'Post like has been removed'
+            message: 'Some problem occurred'
         });
     }
 });
@@ -249,8 +271,11 @@ router.post('/posts/:id/comments', auth, upload.single('commentImage'), async (r
         // updating post by adding newly created comment's id into its postComments array field
         await Post.findByIdAndUpdate({_id: id}, {$push: {postComments: comment._id}});
         
+
+        const createdComment = await Comment.findOne({_id:comment._id}).populate('commentAuthor');
+
         res.status(201).json({
-            message: 'Comment created successfully...'
+            createdComment: createdComment
         });
 
 
@@ -300,13 +325,19 @@ router.put('/posts/:postId/comments/:commentId', auth, upload.single('commentIma
         const updatingComment = await Comment.findByIdAndUpdate({_id:commentId}, {$set:dataToUpdate});
 
         // deleting the non edited version comment's image from cloudinary if the original comment has any
-        if(updatingComment.cloudinaryId.length){
-            await cloudinary.uploader.destroy(updatingComment.cloudinaryId);    
+        if(result.secure_url.length){
+            if(updatingComment.cloudinaryId.length){
+                await cloudinary.uploader.destroy(updatingComment.cloudinaryId);    
+            }
         }
 
+
+        const updatedComment = await Comment.findOne({_id:commentId}).populate('commentAuthor');
+
         res.status(200).json({
-            message: 'Comment updated successfully...'
+            updatedComment: updatedComment
         });
+
     }catch(e){
         res.status(500).json({
             message: 'Some problem occurred'

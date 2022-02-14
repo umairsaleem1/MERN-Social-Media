@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import validateFieldLabelColor from '../../utils/validateFieldLabelColor';
 
 
-const Login = ()=>{
+const Login = ()=>{ 
 
     // state to hold form field values
     const [values, setValues] = useState({email:'', password:''});
@@ -91,7 +91,7 @@ const Login = ()=>{
             });
 
             setTimeout(()=>{
-                navigate('/');
+                navigate('/'); 
             }, 2100);
 
         }catch(e){
@@ -123,7 +123,7 @@ const Login = ()=>{
                         <span>Password is required</span>
                     </div>
 
-                    <motion.button className='login-btn' type='submit'
+                    <motion.button className='login-btn' type='submit' disabled={showLoginLoader}
                         initial={{scale:1}}
                         whileTap={{scale:0.95}}
                     >

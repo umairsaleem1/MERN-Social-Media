@@ -1,11 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useClickOutside } from '../../utils/useClickOutside';
+import searchUser from '../../utils/searchUser';
 import Context from '../../context/Context';
 import './navbar.css';
 
 const Navbar = ()=>{
+    // state that will contain the value of searchBox input
+    const [name, setName] = useState('');
 
     // getting values & methods from global state
     const [, , user] = useContext(Context);
@@ -28,18 +31,62 @@ const Navbar = ()=>{
     }, true);
 
     
+    // state that will contain all the matched users with the searched text
+    const [users, setUsers] = useState([]);
+
+    // reference of the expanded searchBox input
+    const expandedSearchInput = useRef();
+
+
+    const [showLoader, setShowLoader] = useState(false);
+
+
+
+
+    const { profileUserId } = useParams();
+    useEffect(()=>{
+        setName('');
+        setUsers([]);
+        setExpandSearch(false);
+    }, [profileUserId])
+
+
+    const handleSearchInputClick = ()=>{
+        setExpandSearch(true);
+        setTimeout(()=>{
+            expandedSearchInput.current.focus();
+        }, 100)
+    }
+
+
+    // handler that will be called when the value of search input box changes
+    const handleSearchChange = async (e)=>{
+        let val = e.target.value;
+        setName(val);
+
+        // if the value is empty then do nothing
+        if(e.target.value.length<1){
+            setUsers([]);
+            return;
+        }
+
+        setShowLoader(true);
+        // calling the utility function to search matched user in database
+        searchUser(val, setShowLoader, setUsers);
+    }
+    
     return(
         <div className='navbar'>
             <div className='logo-and-search-container'>
                 <Link to='/' className='navbar-logo-link'>
                     <motion.img src='/images/sociallogo.png' alt='logo' className='navbar-logo'
                         initial={{scale:1}}
-                        whileTap={{scale:0.85}}
+                        whileTap={{scale:0.85}} 
                     />
                 </Link>
                 <div className='navbar-search-container'>
-                    <i className="fas fa-search" onClick={()=>setExpandSearch(true)}></i>
-                    <input type='text' placeholder='Search User' onClick={()=>setExpandSearch(true)}/>
+                    <i className="fas fa-search" onClick={handleSearchInputClick}></i>
+                    <input type='text' placeholder='Search User' onClick={handleSearchInputClick}/>
                 </div>
 
                 <div className='navbar-search-expand' ref={expandedSearch} style={expandSearch ? {display:'block'} : {display:'none'}}>
@@ -47,8 +94,40 @@ const Navbar = ()=>{
                         <div className='navbar-search-back' onClick={()=>setExpandSearch(false)}>
                             <i className="fas fa-arrow-left"></i>
                         </div>
-                        <input type='text' placeholder='Search User' />
+                        <input type='text' placeholder='Search User' ref={expandedSearchInput} value={name} onChange={handleSearchChange} />
                     </div>
+                    
+                    {
+                        showLoader
+                        ?
+                            <img src='/images/spiner2.gif' alt='loader' className='user-search-loader' />
+                        :
+                            users.length
+                            ?
+                            <div className='search-result-user-wrapper'>
+                                {
+                                    users.map((user)=>{
+                                        return(
+                                            <Link to={`/profile/${user._id}`} className='link-text-decoration' key={user._id} style={{width:'auto'}}>
+                                                <span className='search-result-user'>
+                                                    <img src={user.profileImage} alt='profileImage' />
+                                                    <h4>
+                                                        {
+                                                            user.name.split(' ').map((item)=>{
+                                                                return item[0].toUpperCase()+item.slice(1)
+                                                            }).join(' ')
+                                                        }
+                                                    </h4>
+                                                </span>
+                                            </Link>
+                                        )
+                                    })
+                                    
+                                }
+                            </div>
+                            :
+                            name && <p className='no-searched-user'>No user found!</p>
+                    }
                 </div>
                 
             </div>

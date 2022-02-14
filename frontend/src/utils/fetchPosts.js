@@ -1,14 +1,14 @@
 
 // making request to backend to fetch posts
-const fetchPosts = async (setPosts, profileUserId)=>{
+const fetchPosts = async (setPosts, profileUserId, pageNo, fromSinglePost)=>{
     try{
         let res;
         if(profileUserId){
-            res = await fetch(`/posts?profileUserId=${profileUserId}`, {
+            res = await fetch(`/posts?profileUserId=${profileUserId}&pageNo=${pageNo}`, {
                 credentials: 'include'
             });
         }else{
-            res = await fetch(`/posts`, {
+            res = await fetch(`/posts/?pageNo=${pageNo}`, {
                 credentials: 'include'
             });
         }
@@ -23,7 +23,14 @@ const fetchPosts = async (setPosts, profileUserId)=>{
         }
 
         const data = await res.json();
-        setPosts(data.posts.reverse());
+        if(fromSinglePost && pageNo>1){
+            setPosts((posts)=>{
+                let allPosts = posts.concat(data.posts)
+                return allPosts;
+            });
+        }else{
+            setPosts(data.posts);
+        }
 
     }catch(e){
         console.log(e);

@@ -1,0 +1,79 @@
+.follow-and-following{
+    width: 100%;
+    height: 40px;
+    /* border: 1px solid red; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.follow-and-following-link{
+    display: flex;
+    align-items: center;
+}
+.follow-and-following-link img{
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    /* border: 1px solid green; */
+    margin-right: 5px;
+}
+.follow-and-following-link p{
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgb(46, 73, 99);
+}
+
+
+.follow-and-following .follow{
+    height: 100%;
+    width: 106px;
+    padding: 8px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    background: #1B74E4;
+    color: white;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.follow-and-following .follow:hover{
+    background: #0c4a96;
+}
+
+.follow-and-following .following{
+    height: 100%;
+    width: 128px;
+    padding: 8px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    background: #1B74E4;
+    color: white;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.follow-and-following .following:hover{
+    background: #0c4a96;
+}
+
+.follow-and-following .follow img, .follow-and-following .following img{
+    height: 25px;
+    width: 24px;
+}
+.follow-and-following .follow:disabled, .follow-and-following .following:disabled{
+    cursor: not-allowed;
+    background: #79aef0;
+}

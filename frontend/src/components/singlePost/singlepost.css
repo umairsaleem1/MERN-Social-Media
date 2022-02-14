@@ -1,7 +1,7 @@
 .singlepost{
     width: 100%;
     height: auto;
-    background: white;
+    background: white; 
     border-radius: 15px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -302,7 +302,7 @@
     margin-right: 10px;
 }
 .mycomment-div .profile-image:hover{
-    filter: brightness(95%);
+    filter: brightness(95%); 
 }
 .mycomment-div .mycomment-textInput{
     height: 45px;
@@ -418,8 +418,12 @@
     align-items: center;
     justify-content: center;
 }
-.mycomment-div form button:hover{
+.mycomment-div form button:hover:enabled{
     background: #0c4a96;
+}
+.mycomment-div form button:disabled{
+    cursor: not-allowed;
+    background: #79aef0;
 }
 .mycomment-div form button img{
     margin-top: 0;

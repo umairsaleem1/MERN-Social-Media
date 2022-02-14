@@ -1,20 +1,18 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
-import fetchPosts from '../../utils/fetchPosts';
-import Context from '../../context/Context';
 import './editCommentModal.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const EditCommentModal = ( { setShowEditCommentModal, comment, postId } )=>{
+const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postComments, setPostComments } )=>{
     const { _id, commentText, commentImage, commentAuthor } = comment;
 
     // state that will contain the textarea input field value
-    const [val, setVal] = useState(commentText);
+    const [val, setVal] = useState(commentText); 
 
     // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
@@ -36,11 +34,7 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId } )=>{
     }, true);
 
 
-    // getting values & methods from global state
-    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
 
-    // getting user's id from url(if present)
-    const { profileUserId } = useParams();
 
 
 
@@ -76,7 +70,7 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId } )=>{
 
     // handler that will be called when user clicks on any emoji from emoji picker
     const onEmojiClick = (event, emojiObject) => {
-        setVal(val + ' ' + emojiObject.emoji + ' ');
+        setVal(val + emojiObject.emoji);
         setShowPicker(false);
         commentTextInputRef.current.focus();
     };
@@ -137,14 +131,14 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId } )=>{
             setShowLoader(false);
             setShowEditCommentModal(false);
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
-            }else{
-                fetchPosts(setPosts, profileUserId);
-            };
             
-            toast.success(data.message, {
+            let newComments = postComments.map((comment)=>{
+                return comment._id===data.updatedComment._id ? data.updatedComment : comment
+            })
+            setPostComments(newComments);
+            
+            
+            toast.success('Comment updated successfully...', {
                 position:"top-center",
                 autoClose:3000
             });
@@ -209,7 +203,7 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId } )=>{
                     </div>
 
                     <div className='edit-comment-btn-wrapper'>
-                        <button className='edit-comment-btn' type='submit'>
+                        <button className='edit-comment-btn' type='submit' disabled={showLoader}> 
                             {
                                 showLoader
                                 ?

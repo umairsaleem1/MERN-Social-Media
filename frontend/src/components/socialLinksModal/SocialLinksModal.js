@@ -7,7 +7,7 @@ import { useClickOutside } from '../../utils/useClickOutside';
 const SocialLinksModal = ( { setShowSocialModal, socialLinks, setSocialLinks } )=>{
     // state that will contain the links that the user will add
     const [links, setLinks] = useState({facebook:'', instagram:'', twitter:''});
-
+    
     // using cutom hook useClickOutside
     const modal = useClickOutside(()=>{
         setShowSocialModal(false);
@@ -19,13 +19,25 @@ const SocialLinksModal = ( { setShowSocialModal, socialLinks, setSocialLinks } )
     }
 
     const addSocialLinks = ()=>{
-        if(links.facebook){
+        if(links.facebook && links.instagram && links.twitter){
+            setSocialLinks({...links});
+        }
+        else if(links.facebook && links.instagram){
+            setSocialLinks({...socialLinks, facebook:links.facebook, instagram: links.instagram});
+        }
+        else if(links.facebook && links.twitter){
+            setSocialLinks({...socialLinks, facebook:links.facebook, twitter:links.twitter});
+        }
+        else if(links.instagram && links.twitter){
+            setSocialLinks({...socialLinks, instagram:links.instagram, twitter:links.twitter});
+        }
+        else if(links.facebook){
             setSocialLinks({...socialLinks, facebook:links.facebook});
         }
-        if(links.instagram){
+        else if(links.instagram){
             setSocialLinks({...socialLinks, instagram:links.instagram});
         }
-        if(links.twitter){
+        else if(links.twitter){
             setSocialLinks({...socialLinks, twitter:links.twitter});
         }
         setShowSocialModal(false);

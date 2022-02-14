@@ -1,0 +1,207 @@
+.update-profile-form-container{
+    width: 650px;
+    height: auto;
+    /* border: 2px solid rgb(235, 234, 234); */
+    border-bottom: none;
+    border-radius: 15px;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding: 15px;
+    padding: 30px; /* Agr padding visually thek na lgi to is line ko remove krna*/
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.updatePage-cover-photo-wrapper{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid blue; */
+    background: white;
+    margin-bottom: 15px;
+}
+.updatePage-cover-photo{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    position: relative;
+}
+.updatePage-cover-photo img{
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+.updatePage-cover-photo-wrapper .updatePage-cover-photo input{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: 1px solid red;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    opacity: 0;
+}
+.updatePage-cover-photo-update-btn{
+    height: 40px;
+    width: 40px;
+    border: 4px solid black;
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: #e4e6eb;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.3s;
+    box-shadow: 1px 1px 20px -8px black;
+}
+.updatePage-cover-photo-update-btn:hover{
+    background: #dddfe2;
+}
+
+
+
+.updatePage-input-container{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    margin-bottom: 15px;
+}
+.updatePage-input-label{
+    font-size: 1rem;
+    position: relative; 
+}
+.updatePage-inputBox{
+    width: 100%;
+    height: 45px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    outline: none;
+    border: none;
+    border-radius: 25px;
+    padding-left: 45px;
+    font-size: 1.2rem;
+    background: #EBEDF0;
+    transition-property: all;
+    transition-duration: 0.3s;
+
+}
+.updatePage-inputBox:hover{
+    background: #e1e3e6;
+}
+::placeholder{
+    color: rgb(179, 178, 178);
+    font-size: 1rem;
+}
+.updatePage-input-icon{
+    position: absolute;
+    left: 15px;
+    top: 37.4px;
+    font-size: 1.1rem;
+    color: grey;
+}
+#pass-show, #pass-hide, #cpass-show, #cpass-hide{
+    cursor: pointer;
+}
+#pass-hide, #cpass-hide{
+    display: none;
+}
+
+.updatePage-inputBox+span{
+    color: red;
+    font-size: 0.9rem;
+    margin-left: 5px;
+    display: none;
+}
+.updatePage-inputBox[focused='true']:invalid +span{
+    display: block;
+    background: #ffcfcc;
+    padding: 3px;
+}
+.updatePage-inputBox[focused='true']:invalid{
+    border: 1px solid red;
+    color: red;
+}
+
+
+.updatePage-bio{
+    width: 100%;
+    height: 100px;
+    margin-top: 20px;
+    /* border: 1px solid red; */
+}
+.updatePage-bio textarea{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 1.1rem;
+    line-height: 20px;
+    resize: none;
+    background: #EBEDF0;
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.updatePage-bio textarea:hover{
+    background: #e1e3e6;
+}
+
+
+
+.updatePage-social-links-btn{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    outline: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: rgb(240, 89, 89);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.2s;
+}
+.updatePage-social-links-btn:hover{
+    background: rgb(206, 4, 4); 
+}
+
+
+.updateProfile-btn{
+    height: 39px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    background: rgb(233, 133, 2);
+    color: white;
+    opacity: 0.7;
+    transition-property: all;
+    transition-duration: 0.2s;
+}
+
+.updateProfile-btn:hover:enabled{
+    opacity: 1;
+}
+.updateProfile-btn:disabled{
+    cursor: not-allowed;
+    background: rgb(212, 171, 116);
+}
+.updateProfile-btn img{
+    height: 100%;
+    width: 25px;
+}

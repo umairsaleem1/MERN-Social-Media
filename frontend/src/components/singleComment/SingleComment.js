@@ -2,15 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import TimeAgo from 'timeago-react';
 import { ToastContainer, toast } from 'react-toastify';
+import useSound from 'use-sound';
 import { useClickOutside } from '../../utils/useClickOutside';
 import EditCommentModal from '../editCommentModal/EditCommentModal';
 import fetchPosts from '../../utils/fetchPosts';
 import Context from '../../context/Context';
 import './singlecomment.css';
 import 'react-toastify/dist/ReactToastify.css';
+import likeSound from '../../sounds/like.mp3';
 
 
-const SingleComment = ( { postComment, postId, postAuthor } )=>{
+const SingleComment = ( { postComment, postId, postAuthor, postComments, setPostComments, pageNo } )=>{
     const { _id, commentText, commentImage, commentAuthor, commentLikes, createdAt } = postComment;
 
     // getting values & methods from global state
@@ -52,6 +54,11 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
     // state that will a boolean to either show or hide the comment edit modal
     const [showEditCommentModal, setShowEditCommentModal] = useState(false);
 
+    // state that will contain a boolean to either show or hide the comment likes persons list
+    const [showLikesList, setShowLikesList] = useState(false);
+
+    const [playLikeSound] = useSound(likeSound);
+
 
 
 
@@ -78,12 +85,10 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
 
             const data = await res.json();
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
-            }else{
-                fetchPosts(setPosts, profileUserId);
-            }
+            let newComments = postComments.filter((comment)=>{
+                return _id!==comment._id;
+            })
+            setPostComments(newComments);
 
             toast.success(data.message, {
                 position:"top-center",
@@ -102,6 +107,9 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
 
     // handler that will be called when the user clicks on any comment's like button
     const handleCommentLike = async ()=>{
+        setTimeout(()=>{
+            playLikeSound();
+        }, 500)
         try{
             // making request to backend to add or remove like on comment of currently loggedIn user
             const res = await fetch(`/posts/${postId}/comments/${_id}?liked=${!liked}`);
@@ -126,9 +134,9 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
 
             // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
             if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
+                fetchPosts(setProfilePosts, profileUserId, pageNo, true);
             }else{
-                fetchPosts(setPosts, profileUserId);
+                fetchPosts(setPosts, undefined, pageNo, true); 
             }
 
         }catch(e){
@@ -176,7 +184,7 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
                 </div>
 
                 {
-                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId}/>
+                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId} postComments={postComments} setPostComments={setPostComments}/>
                 }
             </div>
             {
@@ -196,7 +204,7 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
                     :
                     <span onClick={handleCommentLike}>Like</span>
                 }
-                <p>
+                <p onClick={()=>setShowLikesList(!showLikesList)}> 
                     {
                         commentLikes.length
                         ?
@@ -206,6 +214,35 @@ const SingleComment = ( { postComment, postId, postAuthor } )=>{
                         :
                         null
 
+                    }
+
+                    {
+                    showLikesList && <div className='comment-liked-persons'> 
+                            <div className='comment-liked-person'>
+                                {
+                                    commentLikes.map((commentLike)=>{
+                                        return(
+                                            commentLike._id
+                                            ?
+                                            <Link to={`profile/${commentLike._id}`} className='link-text-decoration' key={commentLike._id}>
+                                                <div>
+                                                    <img src={commentLike.profileImage} alt='profile' />
+                                                    <h5>
+                                                        {
+                                                            commentLike.name.split(' ').map((item)=>{
+                                                                return item[0].toUpperCase()+item.slice(1)
+                                                            }).join(' ')
+                                                        }
+                                                    </h5>
+                                                </div>
+                                            </Link>
+                                            :
+                                            null
+                                        );
+                                    })   
+                                }
+                            </div>
+                    </div>
                     }
                 </p>
                 <div style={{color:'rgb(99, 99, 99)'}}> <TimeAgo datetime={createdAt}/> </div>

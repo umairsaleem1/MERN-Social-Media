@@ -1,0 +1,121 @@
+.post-skeleton-container{
+    width: 900px;
+    height: auto;
+    /* border: 1px solid red; */
+    margin-bottom: 15px;
+    padding: 13px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.skeleton-post-top{
+    width: 140px;
+    display: flex;
+    justify-content: space-between;
+}
+.skeleton-post-middle{
+    height: 200px;
+    margin-top: 20px;
+}
+.skeleton-post-stats, .skeleton-post-bottom{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.skeleton-post-bottom{
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+
+
+
+
+
+
+
+/* edit profile skeleton style */
+.edit-profile-skeleton-container{
+    width: 650px;
+    height: auto;
+    /* border: 1px solid red; */
+    margin: auto;
+    margin-bottom: 30px;
+    margin-top: 20px;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.edit-profile-cover-skeleton, .edit-profile-profile-skeleton, .edit-profile-input-skeleton, .edit-profile-save-skeleton{
+    margin-bottom: 15px;
+}
+.edit-profile-textarea-skeleton, .edit-profile-addsocial-skeleton{
+    margin-bottom: 30px;
+}
+
+
+
+
+
+
+
+
+/* profile skeleton style */
+.profile-skeleton-container{
+    width: 100%;
+    height: auto;
+    /* border: 1px solid red; */
+    margin: auto;
+    margin-bottom: 30px;
+    background: white;
+    border-bottom: 2px solid rgb(214, 214, 214);
+    margin-top: 60px;
+}
+.profile-cover-skeleton{
+    width: 1000px;
+    height: 350px;
+    margin: auto;
+}
+.profile-short-info-skeleton{
+    width: 900px;
+    height: 110px;
+    border-bottom: 1px solid rgb(201, 201, 201);
+    margin: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.profile-photo-skeleton{
+    height: 200px;
+    width: 200px;
+    position: absolute;
+    border-radius: 50%;
+    left: 0;
+    top: -100px;
+}
+.profile-name-skeleton{
+    height: 40px;
+    width: 100px;
+    margin-left: 210px;
+}
+.profile-btn-skeleton{
+    height: 40px;
+    width: 130px;
+}
+
+.profile-tabs-skeleton{
+    height: 60px;
+    width: 900px;
+    margin: auto;
+    padding: 7px 0px;
+    display: flex;
+}
+.profile-tabs-skeleton div{
+    width: 80px;
+    height: 100%;
+    margin-right: 10px;
+}

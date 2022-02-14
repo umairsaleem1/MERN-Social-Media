@@ -186,8 +186,12 @@
     justify-content: center;
 }
 
-.edit-comment-btn:hover{
+.edit-comment-btn:hover:enabled{
     background: #0c4a96;
+}
+.edit-comment-btn:disabled{
+    cursor: not-allowed;
+    background: #79aef0;
 }
 .edit-comment-btn-wrapper .edit-comment-btn img{
     margin-top: 0;

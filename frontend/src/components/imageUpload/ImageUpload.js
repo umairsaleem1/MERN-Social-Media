@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import './imageupload.css';
 
-const ImageUpload = ( { selectedFile, setSelectedFile, preview, setPreview } )=>{
+const ImageUpload = ( { selectedFile, setSelectedFile, preview, setPreview, profileImage } )=>{
 
     // create a preview(set url of selected file) , whenever selected file is changed
     useEffect(()=>{
@@ -97,15 +97,19 @@ const ImageUpload = ( { selectedFile, setSelectedFile, preview, setPreview } )=>
             {
                 !selectedFile
                 ?
-                <>
-                <div className='drag-and-drop-icon'>
-                    <img src='/images/drag.png' alt='drag' />
-                    <input type='file' className='fileInput' name='profileImage' accept='image/*' onChange={onSelectingFile} required/>       
-                </div>
-                <h3>Drag n Drop or Click to upload image</h3>
-                </>
+                    profileImage
+                    ?
+                    <img src={profileImage} alt='preview' className='preview-image'/>
+                    :
+                    <>
+                    <div className='drag-and-drop-icon'>
+                        <img src='/images/drag.png' alt='drag' />
+                        <input type='file' className='fileInput' name='profileImage' accept='image/*' onChange={onSelectingFile} required/>       
+                    </div>
+                    <h3>Drag n Drop or Click to upload image</h3>
+                    </>
                 :
-                <img src={preview} alt='preview' className='preview-image'/>
+                    <img src={preview} alt='preview' className='preview-image'/>
             }
         </div>
     );

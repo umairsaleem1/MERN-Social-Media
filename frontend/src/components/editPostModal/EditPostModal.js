@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
-import fetchPosts from '../../utils/fetchPosts';
 import Context from '../../context/Context';
 import './editpostmodal.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,7 +41,7 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
 
 
     // getting values & methods from global state
-    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
+    const [posts,setPosts, , ,profilePosts ,setProfilePosts] = useContext(Context);
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
@@ -86,7 +85,7 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
 
     // handler that will be called when user clicks on any emoji from emoji picker
     const onEmojiClick = (event, emojiObject) => {
-        setVal(val + ' ' + emojiObject.emoji + ' ');
+        setVal(val + emojiObject.emoji);
         setShowPicker(false);
         postTextInputRef.current.focus();
     };
@@ -147,14 +146,20 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
             setShowLoader(false);
             setShowEditPostModal(false);
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            
             if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
+                let newPosts = profilePosts.map((post)=>{ 
+                    return post._id===data.updatedPost._id ? data.updatedPost : post
+                })
+                setProfilePosts(newPosts);
             }else{
-                fetchPosts(setPosts, profileUserId);
+                let newPosts = posts.map((post)=>{
+                    return post._id===data.updatedPost._id ? data.updatedPost : post  
+                })
+                setPosts(newPosts);
             }
 
-            toast.success(data.message, {
+            toast.success('Post updated successfully...', {
                 position:"top-center",
                 autoClose:3000
             });
@@ -245,7 +250,7 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
                     </div>
 
                     <div className='edit-post-btn-wrapper'>
-                        <button className='edit-post-btn' type='submit'>
+                        <button className='edit-post-btn' type='submit' disabled={showLoader}>
                             {
                                 showLoader
                                 ?

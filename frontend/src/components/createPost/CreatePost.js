@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import Context from '../../context/Context';
-import fetchPosts from '../../utils/fetchPosts';
 import './createpost.css';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -80,7 +79,7 @@ const CreatePost = ( { userImage, userId } )=>{
 
     // handler that will be called when user clicks on any emoji from emoji picker
     const onEmojiClick = (event, emojiObject) => {
-        setVal(val + ' ' + emojiObject.emoji + ' ');
+        setVal(val + emojiObject.emoji);
         setShowPicker(false);
         postTextInputRef.current.focus();
     };
@@ -141,14 +140,21 @@ const CreatePost = ( { userImage, userId } )=>{
             setPreview(undefined);
             setMedia('');
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
+            
             if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
+                setProfilePosts((posts)=>{
+                    return [data.createdPost, ...posts]
+                });
+                
             }else{
-                fetchPosts(setPosts, profileUserId);
+                setPosts((posts)=>{
+                    return [data.createdPost, ...posts]
+                });
+                
             }
 
-            toast.success(data.message, {
+            
+            toast.success('Post created successfully...', {
                 position:"top-center",
                 autoClose:3000
             });
@@ -248,7 +254,7 @@ const CreatePost = ( { userImage, userId } )=>{
                         <p>Feelings</p>
                     </motion.span>
 
-                    <motion.button type='submit'
+                    <motion.button type='submit' disabled={showLoader}
                         initial={{scale:1}}
                         whileTap={{scale:0.85}}
                     >

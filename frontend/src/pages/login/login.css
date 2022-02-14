@@ -84,9 +84,14 @@
     transition-property: all;
     transition-duration: 0.2s;
 }
-.login-btn:hover{
+.login-btn:hover:enabled{
     opacity: 1;
 }
+.login-btn:disabled{
+    cursor: not-allowed;
+    background: rgb(212, 171, 116);
+}
+
 .login-btn img{
     height: 100%;
     width: 25px;

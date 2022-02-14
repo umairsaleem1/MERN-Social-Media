@@ -11,13 +11,13 @@ const userSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: 'Name is required'
+        required: 'Name is required',
+        lowercase: true
     },
     email: {
         type: String,
         required: 'Email is required',
-        unique: true,
-        select: false
+        unique: true
     },
     password: {
         type: String,
@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: 'Username is required',
-        unique: true
+        unique: true,
+        lowercase: true
     },
     bio: String,
     socialLinks: mongoose.Schema.Types.Mixed,
@@ -41,7 +42,9 @@ const userSchema = new mongoose.Schema({
     },
     coverImage_cloudinaryId:{
         type: String
-    }
+    },
+    followers:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    following:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 });
 
 

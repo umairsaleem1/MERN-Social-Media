@@ -1,0 +1,130 @@
+.grp-settings-container{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    background: white;
+}
+
+
+.grp-settings-header{
+    width: 100%;
+    height: 60px;
+    background: rgb(76, 180, 158);
+    border-top-right-radius: 8px;
+    padding: 0px 20px;
+    border-bottom: 1px solid rgb(223, 223, 223);
+    border-left: 1px solid rgb(190, 190, 190);
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.grp-settings-back{
+    height: 42px;
+    width: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+    color: white;
+    margin-right: 17.5px;
+    padding-top: 2px;
+}
+.grp-settings-header h3{
+    font-size: 1.2rem;
+    margin-left: 50px;
+}
+
+
+
+
+.grp-settings{
+    width: 100%;
+    height: calc(100% - 60px);
+    /* border: 2px solid red; */
+    overflow: auto;
+    background: #f0f2f5;
+}
+.grp-settings::-webkit-scrollbar {
+    width: 7px;
+}
+
+.grp-settings::-webkit-scrollbar-track {
+    background-color: white;
+    border-radius: 5px;
+}
+
+.grp-settings::-webkit-scrollbar-thumb {
+    background: rgb(199, 199, 199);
+    background: black;
+    border-radius: 5px;
+}
+
+.edit-grp-info-authority{
+    width: 100%;
+    height: auto;
+    background: white;
+    padding: 20px 30px;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px -8px black;
+}
+.edit-grp-info-authority p{
+    color: #3B4A54;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+.edit-grp-info-authority span{
+    color:#8696a0;
+    font-size: 14px;
+}
+
+
+.edit-grp-info-authority-desc{
+    width: 100%;
+    height: auto;
+    padding: 12px 30px 28px 30px;
+}
+.edit-grp-info-authority-desc p{
+    color:#8696a0;
+    font-size: 14px;
+}
+
+
+
+.send-messages-authority{
+    width: 100%;
+    height: auto;
+    background: white;
+    padding: 20px 30px;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px -8px black;
+}
+.send-messages-authority p{
+    color: #3B4A54;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+.send-messages-authority span{
+    color:#8696a0;
+    font-size: 14px;
+}
+
+
+
+.edit-grp-admins-authority{
+    width: 100%;
+    height: auto;
+    background: white;
+    padding: 20px 30px;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px -8px black;
+    margin-top: 10px;
+}
+.edit-grp-admins-authority p{
+    color: #3B4A54;
+    font-size: 17px;
+    margin-bottom: 5px;
+}

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import TimeAgo from 'timeago-react';
+import useSound from 'use-sound';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
 import fetchPosts from '../../utils/fetchPosts';
@@ -11,10 +12,13 @@ import EditPostModal from '../editPostModal/EditPostModal';
 import Context from '../../context/Context';
 import './singlepost.css';
 import 'react-toastify/dist/ReactToastify.css';
+import likeSound from '../../sounds/like.mp3';
 
-const SinglePost = ( { post, loggedInUser } )=>{
-    const { _id, postText, postMedia, postMediaType, postLocation, postAuthor, postLikes, postComments, createdAt } = post;
+const SinglePost = ( { post, loggedInUser, pageNo } )=>{
+    const { _id, postText, postMedia, postMediaType, postLocation, postAuthor, postLikes, createdAt } = post;
     const { profileImage, username, role } = loggedInUser;
+
+    const [postComments, setPostComments] = useState(post.postComments);
 
     // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
@@ -68,13 +72,16 @@ const SinglePost = ( { post, loggedInUser } )=>{
 
 
     // getting values & methods from global state
-    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
+    const [posts,setPosts, , ,profilePosts ,setProfilePosts] = useContext(Context);
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
 
     // state to hide or show loader from post comment button
     const [showLoader, setShowLoader] = useState(false); 
+
+
+    const [playLikeSound] = useSound(likeSound);
 
 
 
@@ -125,7 +132,7 @@ const SinglePost = ( { post, loggedInUser } )=>{
 
     // handler that will be called when user clicks on any emoji from emoji picker
     const onEmojiClick = (event, emojiObject) => {
-        setMyComment(myComment + ' ' + emojiObject.emoji + ' ');
+        setMyComment(myComment + emojiObject.emoji);
         setShowPicker(false);
         myCommentInputRef.current.focus();
     };
@@ -158,11 +165,16 @@ const SinglePost = ( { post, loggedInUser } )=>{
 
             const data = await res.json();
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
             if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
+                let newPosts = profilePosts.filter((post)=>{
+                    return post._id!==_id
+                })
+                setProfilePosts(newPosts);
             }else{
-                fetchPosts(setPosts, profileUserId);
+                let newPosts = posts.filter((post)=>{
+                    return post._id!==_id
+                })
+                setPosts(newPosts);
             }
 
             toast.success(data.message, {
@@ -186,6 +198,9 @@ const SinglePost = ( { post, loggedInUser } )=>{
 
     // handler that will be called when the user clicks on post like button
     const handlePostLike = async ()=>{
+        setTimeout(()=>{
+            playLikeSound();
+        }, 200)
         try{
             // making request to backend to add or remove like of currently loggedIn user
             const res = await fetch(`/posts/${_id}?liked=${!liked}`);
@@ -203,16 +218,17 @@ const SinglePost = ( { post, loggedInUser } )=>{
                 }
                 let ind = arr.indexOf(loggedInUser._id);
                 postLikes.splice(ind,1);
+                
             }else{
-                postLikes.push({_id:loggedInUser._id});
+                postLikes.push(loggedInUser._id);
             }
             setLiked(!liked);
 
             // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
             if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
+                fetchPosts(setProfilePosts, profileUserId, pageNo, true);
             }else{
-                fetchPosts(setPosts, profileUserId);
+                fetchPosts(setPosts, undefined, pageNo, true);
             }
            
         }catch(e){
@@ -266,13 +282,9 @@ const SinglePost = ( { post, loggedInUser } )=>{
             }
 
             const data = await res.json();
-
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId);
-            }else{
-                fetchPosts(setPosts, profileUserId);
-            }
+            setPostComments((comments)=>{
+                return [data.createdComment, ...comments]
+            })
 
             //reseting values
             setMyComment('');
@@ -280,7 +292,8 @@ const SinglePost = ( { post, loggedInUser } )=>{
             setPreview(undefined);
             setShowLoader(false);
 
-            toast.success(data.message, {
+            
+            toast.success('Comment created successfully...', {
                 position:"top-center",
                 autoClose:3000
             });
@@ -410,11 +423,13 @@ const SinglePost = ( { post, loggedInUser } )=>{
                 }
 
                 {
-                    showLikesList && <div className='post-liked-persons' ref={likesList}>
+                    showLikesList && <div className='post-liked-persons' ref={likesList}> 
                             <div className='post-liked-person'>
                                 {
                                     postLikes.map((postLike)=>{
                                         return(
+                                            postLike._id
+                                            ?
                                             <Link to={`profile/${postLike._id}`} className='link-text-decoration' key={postLike._id}>
                                                 <div>
                                                     <img src={postLike.profileImage} alt='profile' />
@@ -427,6 +442,8 @@ const SinglePost = ( { post, loggedInUser } )=>{
                                                     </h5>
                                                 </div>
                                             </Link>
+                                            :
+                                            null
                                         );
                                     })   
                                 }
@@ -502,7 +519,7 @@ const SinglePost = ( { post, loggedInUser } )=>{
                             {
                                 selectedFile || myComment.length
                                 ?
-                                <motion.button type='submit' style={selectedFile ? {position:'absolute', right:'17px', bottom:0} : null}
+                                <motion.button type='submit' style={selectedFile ? {position:'absolute', right:'17px', bottom:0} : null} disabled={showLoader}
                                     initial={{scale:1, opacity:0}}
                                     animate={{opacity:1}}
                                     whileTap={{scale:0.85}}
@@ -527,7 +544,7 @@ const SinglePost = ( { post, loggedInUser } )=>{
                             postComments.length
                             ?
                             postComments.map((postComment)=>{
-                                return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor}/>
+                                return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor} postComments={postComments} setPostComments={setPostComments} pageNo={pageNo}/>
                             })
                         
                             :

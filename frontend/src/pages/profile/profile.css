@@ -1,3 +1,10 @@
+.profile-loader{
+    height: 70px;
+    width: 70px;
+    position: fixed;
+    left: 45%;
+    top: 40%;
+}
 .cover-photo-wrapper{
     width: 100%;
     height: auto;
@@ -48,6 +55,22 @@
 }
 .cover-photo-update-btn:hover{
     background: #dddfe2;
+}
+.cover-photo-loader{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cover-photo-loader img{
+    height: 50px;
+    width: 50px;
 }
 
 
@@ -116,6 +139,23 @@
 .profile-photo-update-btn:hover{
     background: #dddfe2;
 }
+.profile-photo-loader{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile-photo-loader img{
+    height: 50px;
+    width: 50px;
+}
 
 .edit-profile-btn{
     /* border: 1px solid red; */
@@ -152,6 +192,9 @@
     cursor: pointer;
     transition-property: all;
     transition-duration: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .profile-follow-btn:hover{
     background: #0c4a96;
@@ -173,9 +216,20 @@
     cursor: pointer;
     transition-property: all;
     transition-duration: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .profile-following-btn:hover{
     background: #0c4a96;
+}
+.profile-following-btn img, .profile-follow-btn img{
+    height: 25px;
+    width: 24px;
+}
+.profile-following-btn:disabled, .profile-follow-btn:disabled{
+    cursor: not-allowed;
+    background: #79aef0;
 }
 
 
@@ -232,10 +286,21 @@
 
 
 
-.profile-posts{
+.profile-posts, .profile-followers, .profile-following, .profile-about{
     width: 900px;
     height: auto;
     margin: auto;
     margin-top: 50px;
+    /* border: 1px solid red; */
+}
+.profile-followers, .profile-following, .profile-about{
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+    padding: 13px 17px;
+    padding-top: 20px;
+    margin-bottom: 15px;
+    min-height: 300px;
 }
 
