@@ -107,6 +107,7 @@
     border-radius: 50%;
     transition-property: all;
     transition-duration: 0.3s;
+    background: black;
 }
 .profile-photo img:hover{
     filter: brightness(95%);

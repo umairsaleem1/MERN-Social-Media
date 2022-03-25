@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 
 export const useClickOutside = (handler, isVisible)=>{
     const modal = useRef();
-
+    
     useEffect(()=>{
         // if the targetted button(e.g post options btn '...') is visible then only this will execute
         if(isVisible){
@@ -16,6 +16,9 @@ export const useClickOutside = (handler, isVisible)=>{
                         return;
                     }
                     else if(e.target.id==='commentOptions'){
+                        return;
+                    }
+                    else if(e.target.id==='deleteNotificationOption'){
                         return;
                     }
                     handler();

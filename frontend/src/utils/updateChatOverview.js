@@ -5,25 +5,29 @@ const updateChatOverview = (setChats, chatId, message, recordedTime)=>{
         return cts;
     });
 
-    let updatedChats = chats.map((upchat)=>{
+
+    let modifiedChat;
+    let updatedChats = chats.filter((upchat)=>{
+
         if(String(upchat._id)===String(chatId)){
-            let newChat = upchat;
-            newChat.lastMessageDate = message.createdAt;
-            newChat.lastMessage = message.text;
+            modifiedChat = upchat;
+            modifiedChat.lastMessageDate = message.createdAt;
+            modifiedChat.lastMessage = message.text;
             if(message.messageMediaType==='img'){
-                newChat.lastMessage = '<i className="fas fa-camera"></i>&nbsp;&nbsp;Photo'
+                modifiedChat.lastMessage = '<i className="fas fa-camera"></i>&nbsp;&nbsp;Photo'
             }
             if(message.messageMediaType==='aud'){
-                newChat.lastMessage = `<i className="fas fa-microphone"></i>&nbsp;&nbsp;${recordedTime.m}:${recordedTime.s<10 ? '0'+recordedTime.s : recordedTime.s}`
+                modifiedChat.lastMessage = `<i className="fas fa-microphone"></i>&nbsp;&nbsp;${recordedTime.m}:${recordedTime.s<10 ? '0'+recordedTime.s : recordedTime.s}`
             }
 
-            return newChat;
+            return false;
         }
         else{
-            return upchat;
+            return true;
         }
     })
-    
+    updatedChats.unshift(modifiedChat);
+
     setChats(updatedChats);
 }
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from 'react-infinite-scroll-component'; 
+import io from "socket.io-client";
 import Navbar from '../../components/navbar/Navbar';
 import CreatePost from '../../components/createPost/CreatePost';
 import SinglePost from '../../components/singlePost/SinglePost';
@@ -14,16 +15,20 @@ import authenticateUser from '../../utils/authenticateUser';
 import fetchPosts from '../../utils/fetchPosts';
 import fetchProfileUser from '../../utils/fetchProfileUser';
 import followOrUnfollow from '../../utils/followOrUnfollow';
+import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
+import checkMessagesUpdate from '../../utils/checkMessagesUpdate';
+import { useSocket } from '../../utils/useSocket';
+import { useJoinChats } from '../../utils/useJoinChats';
 import Context from '../../context/Context';
 import './profile.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = ()=>{
     // state that will contain the name of active tab selected
-    const [activeTab, setActiveTab] = useState('posts');
+    const [activeTab, setActiveTab] = useState('posts'); 
 
     // getting values & methods from global state
-    const [, , user, setUser, profilePosts, setProfilePosts] = useContext(Context);
+    const [, , user, setUser, profilePosts, setProfilePosts, socketRef, onlineUsers, setOnlineUsers, , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
 
     // state that will contain profile data of which user's id is provided in the url
     const [profileUser, setProfileUser] = useState('');
@@ -41,6 +46,29 @@ const Profile = ()=>{
     const [hasMorePosts, setHasMorePosts] = useState(true);
 
 
+    // calling custom hook for all the socket related stuff
+    useSocket();
+    // calling custom hook to fetch and then join all chats of currently logged in user
+    useJoinChats();
+
+
+
+    // making call to backend to check if any new notifications present which the user has not opened yet or not(to show update indicator on top if the use has not opened the new notifications yet)
+    useEffect(()=>{
+        if(user){
+            checkNotificationsUpdate(user._id, setUnreadNotificationsPresent);
+        }
+    }, [user, setUnreadNotificationsPresent])
+
+
+
+    useEffect(()=>{
+        if(user){
+            checkMessagesUpdate(user._id, setUnreadMessagesPresent);
+        }
+    }, [user, setUnreadMessagesPresent])
+
+
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
@@ -50,6 +78,30 @@ const Profile = ()=>{
     const [showFollowLoader, setShowFollowLoader] = useState(false);
 
     const navigate = useNavigate();
+
+
+    
+    // connecting socket instance(user) to backend & registering events if the socket(user) is not already connected
+    useEffect(()=>{
+        if(user){
+            if(!socketRef.current){
+                socketRef.current = io('http://localhost:8000');
+
+
+                socketRef.current.on('connect', ()=>{
+                    // firing newConnection event when socket(user) is successfylly connected to server along with user's id as data
+                    socketRef.current.emit('newConnection', user._id);
+                });
+
+                socketRef.current.on('onlineUsers', (users)=>{
+                    setOnlineUsers(users);
+                })
+
+            }
+        }
+    }, [socketRef, user, setOnlineUsers])
+
+
 
 
     // setting isFollowing state based on data fetched from database
@@ -234,7 +286,7 @@ const Profile = ()=>{
     // handler that will be called when the user clicks on follow or following btn
     const handleFollowAndUnfollow = async ()=>{
         // calling the utility function
-        followOrUnfollow(profileUserId, isFollowing, setIsFollowing, setShowFollowLoader);
+        followOrUnfollow(profileUserId, isFollowing, setIsFollowing, setShowFollowLoader, user, socketRef);
     }
 
 
@@ -276,6 +328,11 @@ const Profile = ()=>{
                 <div className='profile-short-info'>
                     <div className='profile-photo'>
                         <img src={profileUser.profileImage} alt='profilePhoto' />
+                        {
+                            (user.username!==profileUser.username && onlineUsers.includes(String(profileUser._id)))
+                            &&
+                            <i className="fas fa-circle" style={{color:'green', fontSize:30, position: 'absolute', bottom: 0, left: 133}}></i>
+                        }
                         {
                             user.username===profileUser.username 
                             &&

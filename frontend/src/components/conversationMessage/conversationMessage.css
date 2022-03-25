@@ -8,7 +8,7 @@
 .conversation-message{
     height: auto;
     max-width: 60%;
-    background: white;
+    background: #EBEDF0;
     display: inline-block;
     padding: 8px;
     padding-bottom: 20px;
@@ -16,6 +16,8 @@
     position: relative;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
+    /* background: #f3f7ff; */
+    text-align: center;
 }
 .conversation-message .message-indicator{
     position: absolute;
@@ -23,7 +25,7 @@
     left: -5px;
     height: 10px;
     width: 15px;
-    background: white;
+    background: #EBEDF0;
     transform: skew(40deg);
 }
 .conversation-message h5{
@@ -43,14 +45,14 @@
 }
 .conversation-message p{
     color: #111b21;
-    font-size: 14.2px;
+    font-size: 16px;
 }
 
 .conversation-message audio::-webkit-media-controls-panel {
-    background-color: white;
+    background: #EBEDF0;
 }
 #my-audio-message::-webkit-media-controls-panel {
-    background-color: #d9fdd3;
+    background: #1B74E4;
 }
 .conversation-message audio, #my-audio-message audio{
     margin-bottom: -15px;

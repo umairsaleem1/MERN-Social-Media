@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
+import Context from '../../context/Context';
 import './editCommentModal.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postComments, setPostComments } )=>{
+const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postAuthorId, postComments, setPostComments } )=>{
     const { _id, commentText, commentImage, commentAuthor } = comment;
 
     // state that will contain the textarea input field value
@@ -30,11 +31,13 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postComme
 
     // using custom hook for edit post modal
     const editCommentModalRef = useClickOutside(()=>{
-        setShowEditCommentModal(false);
+        setShowEditCommentModal(false); 
     }, true);
 
 
 
+    // getting values & methods from global state
+    const [, , user, , , , socketRef] = useContext(Context);
 
 
 
@@ -142,6 +145,13 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postComme
                 position:"top-center",
                 autoClose:3000
             });
+
+
+
+
+
+            // emitting commentEditUpdate event to notify all the users about this edited comment
+            socketRef.current.emit('commentEditUpdate', postId, postAuthorId, user._id, data.updatedComment)
 
         }catch(e){
             setShowLoader(false);

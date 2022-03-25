@@ -193,6 +193,7 @@
     padding: 0px 40px;
     text-decoration: none;
     color: black;
+    position: relative;
 }
 .navbar-link:hover{
     transition-property: all;
@@ -241,6 +242,7 @@
     height: 100%;
     border-radius: 50%;
     margin-right: 7px;
+    background: black;
 }
 .navbar-profile-image h3{
     font-size: 1rem;
@@ -274,7 +276,7 @@
     position: absolute;
     top: 55px;
     right: 20px;
-    height: 300px;
+    height: auto;
     width: 300px;
     /* border: 1px solid red; */
     background: white;
@@ -406,4 +408,11 @@
 .dropdown-logout-div p{
     color: #050505;
     margin-left: 12px;
+}
+
+
+.dropdown-logout-div img{
+    height: 50px;
+    width: 50px;
+    margin-left: 38%;
 }

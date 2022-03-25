@@ -10,7 +10,10 @@ export const PostSkeleton = ()=>{
             <div className='post-skeleton-container'>
                 <div className='skeleton-post-top'>
                     <Skeleton height={50} width={50} circle={true} />
-                    <Skeleton height={50} width={80} />
+                    <div className='skeleton-post-top-name-time'>
+                        <Skeleton height={20} width={80} />
+                        <Skeleton height={20} width={80} />
+                    </div>
                 </div>
                 <div className='skeleton-post-middle'>
                     <Skeleton height={200} />
@@ -20,8 +23,8 @@ export const PostSkeleton = ()=>{
                     <Skeleton height={30} width={100} />
                 </div>
                 <div className='skeleton-post-bottom'>
-                    <Skeleton height={60} width={130} />
-                    <Skeleton height={60} width={130} />
+                    <Skeleton height={40} width={130} />
+                    <Skeleton height={40} width={130} />
                 </div>
             </div>
         // </SkeletonTheme>
@@ -93,6 +96,34 @@ export const ProfileSkeleton = ()=>{
                 <div>
                     <Skeleton height='100%' />
                 </div>
+            </div>
+        </div>
+    );
+}
+
+
+
+
+
+
+
+
+export const NotificationSkeleton = ()=>{
+    return(
+        <div className='notification-skeleton-container'>
+            <div className='notification-profile-skeleton'>
+                <Skeleton height='100%' borderRadius='50%' />
+            </div>
+            <div className='notification-text-content-skeleton'>
+                <div className='notification-text-skeleton'>
+                    <Skeleton height='100%' />
+                </div>
+                <div className='notification-time-skeleton'>
+                    <Skeleton height='100%' />
+                </div>
+            </div>
+            <div className='notification-option-skeleton'>
+                <Skeleton height='100%' borderRadius='50%' />
             </div>
         </div>
     );

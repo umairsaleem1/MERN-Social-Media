@@ -1,14 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import MicRecorder from 'mic-recorder-to-mp3';
 import { ToastContainer, toast } from 'react-toastify';
+import useSound from 'use-sound';
 import updateChatOverview from '../../utils/updateChatOverview';
+import Context from '../../context/Context';
+import likeSound from '../../sounds/like.mp3'; 
 import './sendMessage.css';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 
-const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setMessage, selectedConversationId, setMessages, socket, setChats } )=>{
+const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setMessage } )=>{
+
+
+    // getting values & methods from global state
+    const [, , user, , , , socketRef, , , , , , , selectedConversationId, , selectedConversationInfo, , , setChats, , setMessages] = useContext(Context);
+
+    const [playLikeSound] = useSound(likeSound);
+
+
 
 
     // state to show or hide the emoji picker of text/image component
@@ -93,6 +104,23 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
 
     // ########## Functions for text/image send component ###########
 
+    const handleMessageTextChange = (e)=>{
+        setMessage(e.target.value);
+
+        const formatedName = user.name.split(' ').map((item)=>{
+            return item[0].toUpperCase()+item.slice(1)
+        }).join(' ');
+
+        // firing typing event to server when the text input value changes
+        socketRef.current.emit('typing', String(selectedConversationId), formatedName);
+
+    }
+    const handleMessageInputKeyUp = (e)=>{
+        if(e.keyCode===13){
+            sendMessage();
+        }
+    }
+
 
     // handler that will set file in state when ever the user clicks on select button
     const onSelectingFile = (e)=>{
@@ -134,6 +162,15 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
                 await micRecorder.start();
                 setDate(new Date(Date.now()));
                 setIsRecording(true);
+
+
+                const formatedName = user.name.split(' ').map((item)=>{
+                    return item[0].toUpperCase()+item.slice(1)
+                }).join(' ');
+
+                // firing startRecording event to server when the user starts recording
+                socketRef.current.emit('startRecording', String(selectedConversationId), formatedName);
+
             }catch(e){
                 toast.error('Some problem occurred while recording audio', {
                     position:"top-center",
@@ -153,6 +190,15 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
 
     // handler(which will stop and delete audio) that will be called when the user clicks on delete recording icon
     const cancelRecording = async ()=>{
+
+        const formatedName = user.name.split(' ').map((item)=>{
+            return item[0].toUpperCase()+item.slice(1)
+        }).join(' ');
+
+        // firing stopRecording event to server when the user stops recording
+        socketRef.current.emit('stopRecording', String(selectedConversationId), formatedName);
+
+        // reseting values
         setDate(null);
         setTime({m:0, s:0});
         setIsRecording(false);
@@ -166,6 +212,14 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
 
     // handler that will stop the audio recording and return mp3 file of that recorded audio
     const stopRecording = async ()=>{
+
+        const formatedName = user.name.split(' ').map((item)=>{
+            return item[0].toUpperCase()+item.slice(1)
+        }).join(' ');
+
+        // firing stopRecording event to server when the user stops recording
+        socketRef.current.emit('stopRecording', String(selectedConversationId), formatedName);
+        
         try{
             const [buffer, blob] = await micRecorder.stop().getMp3();
 
@@ -240,11 +294,56 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
                 return [...messages, data.savedMessage]
             });
 
-            // emiting event 'send-message' along with new sent message, slectedConversationId(room id) & recordedTime of audio(if voice message else will be undefined) as data
-            socket.emit('send-message', data.savedMessage, String(selectedConversationId), recordedTime);
+
+            playLikeSound();
+            
+
+            // // emiting event 'send-message' along with new sent message, slectedConversationId(room id) & recordedTime of audio(if voice message else will be undefined) as data
+            // socketRef.current.emit('send-message', data.savedMessage, String(selectedConversationId), recordedTime);
 
             // calling updateChatOverview utility function to show recent message on ConversationOverview
             updateChatOverview(setChats, selectedConversationId, data.savedMessage, recordedTime);
+
+
+
+
+
+
+            // ############ Creating notification of this new message
+
+            let messageNotificationReceivers = selectedConversationInfo.users.map((selectedUser)=>{
+                return selectedUser._id;
+            })
+            messageNotificationReceivers = messageNotificationReceivers.filter((selectedUserId)=>{
+                return selectedUserId!==user._id;
+            })
+            const newNotification = {
+                messageNotificationReceivers: messageNotificationReceivers,
+                notificationType: 'message',
+                notificationChatId: selectedConversationId
+            };
+
+
+            // making request to backend to create a new notification of like
+            const notiRes = await fetch('/notifications', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newNotification)
+            })
+
+            if(!notiRes.ok){
+                throw new Error(notiRes.statusText);
+            }
+
+            const notiData = await notiRes.json();
+                
+            // emiting event 'send-message' along with new sent message, slectedConversationId(room id) & recordedTime of audio(if voice message else will be undefined) as data
+            socketRef.current.emit('send-message', data.savedMessage, String(selectedConversationId), recordedTime, notiData.savedNotification);
+            // socketRef.current.emit('likeNotification', notiData.savedNotification)
+            
 
         }catch(e){
             console.log(e);
@@ -258,8 +357,8 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
                 ?
                 <>
                 <div className='message-input-container'>
-                    <form encType='multipart/form-data'>
-                        <input type='text' placeholder='Message' className='message-text-input' value={message} onChange={e =>setMessage(e.target.value)} ref={messageTextInputRef} />
+                    {/* <form encType='multipart/form-data' onSubmit={()=> false}> */}
+                        <input type='text' placeholder='Message' className='message-text-input' value={message} onChange={handleMessageTextChange} ref={messageTextInputRef} onKeyUp={handleMessageInputKeyUp} />
                         <i className="far fa-grin" onClick={()=>setShowPicker(!showPicker)} style={showPicker ? {background:'#d1e1ff'} : null}></i>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
                             <path d="M19 4H5a3 3 0 00-3 3v10a3 3 0 003 3h14a3 3 0 003-3V7a3 3 0 00-3-3zm1 13a1 1 0 01-.29.71L16 14l-2 2-6-6-4 4V7a1 1 0 011-1h14a1 1 0 011 1zm-2-7a2 2 0 11-2-2 2 2 0 012 2z"></path>
@@ -269,7 +368,7 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
                         {
                             showPicker && <Picker pickerStyle={{ position: 'absolute', top:'-330px', left:'0px'}} onEmojiClick={onEmojiClick}/>
                         }
-                    </form>
+                    {/* </form> */}
                 </div>
                                 
                 {
@@ -298,7 +397,7 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
                 <div className='audio-message-recording-wrapper'>
                     <div className='audio-message-recording'>
                         <motion.i className="fas fa-trash audio-cancel-btn" onClick={cancelRecording}
-                            initial={{background:'#fff'}}
+                            initial={{background:'#EBEDF0'}}
                             whileTap={{background:'rgb(212, 212, 212)'}}
                         ></motion.i>
                         <span>{time.m}:{time.s<10 ? '0'+time.s : time.s}</span>

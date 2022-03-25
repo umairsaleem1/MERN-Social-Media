@@ -92,7 +92,7 @@ const Login = ()=>{
 
             setTimeout(()=>{
                 navigate('/'); 
-            }, 2100);
+            }, 2100); 
 
         }catch(e){
             setShowLoginLoader(false);

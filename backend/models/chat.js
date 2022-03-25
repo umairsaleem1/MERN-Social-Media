@@ -41,6 +41,10 @@ const chatSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
+    grpCreator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     grpSendMessages: {
         type: String,
         default: 'all'
@@ -49,7 +53,7 @@ const chatSchema = new mongoose.Schema({
         type: String,
         default: 'admins'
     }
-});
+}, {timestamps:true});
 
 const Chat = mongoose.model('Chat', chatSchema);
 

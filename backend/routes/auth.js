@@ -144,6 +144,23 @@ router.post('/login', async (req, res)=>{
 
 
 
+
+
+// logout
+router.get('/logout', auth, (req, res)=>{
+    res.cookie('accessToken', null, {
+        httpOnly:true,
+        expires: new Date(Date.now())
+    });
+
+    res.status(200).json({
+        message: 'Logged out'
+    });
+})
+
+
+
+
 // Forgot Password
 router.post('/forgotpassword', async (req, res)=>{
     try{

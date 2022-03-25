@@ -2,62 +2,117 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
-import io from "socket.io-client";
 import Navbar from '../../components/navbar/Navbar';
 import ConversationOverview from '../../components/conversationOverview/ConversationOverview';
 import ConversationHeader from '../../components/conversationHeader/ConversationHeader';
 import ConversationMessages from '../../components/conversationMessages/ConversationMessages';
 import UpdateGrp from '../../components/updateGrp/UpdateGrp';
+import { NotificationSkeleton } from '../../components/skeletons/Skeletons';
 import searchUser from '../../utils/searchUser';
 import authenticateUser from '../../utils/authenticateUser';
-import updateChatOverview from '../../utils/updateChatOverview';
+import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
+import { useSocket } from '../../utils/useSocket';
+import { useJoinChats } from '../../utils/useJoinChats';
 import Context from '../../context/Context';
 import './messages.css'; 
 
 const Messages = ()=>{
 
+    // getting values & methods from global state
+    const [, , user, setUser, , , , , , , , , , , setSelectedConversationId, , setSelectedConversationInfo, chats, setChats, , , , , , , chatHistoryFetched, , , , , , , setUnreadNotificationsPresent, unreadMessagesPresent, setUnreadMessagesPresent, , setMessagesNotifications] = useContext(Context);
+
+
     const [showUpdateGrp, setShowUpdateGrp] = useState(false);
     // state to show ConversationMessages with user/group or show default chatting screen
     const [showConversation, setShowConversation] = useState(false);
-    // state that will contain id of of the Conversation with which the user is currently chatting(by clicking on the Conversation Overview)
-    const [selectedConversationId, setSelectedConversationId] = useState(null);
-    // state that will contain info of the user/group present in header of conversation to whom the user is currently chatting(by clicking on the Conversation Overview)
-    const [selectedConversationInfo, setSelectedConversationInfo] = useState('');
-    // state that will contain the user's chat history
-    const [chats, setChats] = useState([]);
-    // state that will contain the conversation messages of selectedConverstionId
-    const [messages, setMessages] = useState([]); 
 
 
 
 
+    // calling custom hook for all the socket related stuff
+    useSocket(setShowConversation);
+    // calling custom hook to fetch and then join all chats of currently logged in user
+    useJoinChats(); 
 
-    // connecting socket(individual user) to server & assigning its reference to socketRef so that the socket can push & listen for events
-    let socketRef = useRef();
+
+
+
+    // making call to backend to check if any new notifications present which the user has not opened yet or not(to show update indicator on top if the use has not opened the new notifications yet)
     useEffect(()=>{
-        socketRef.current = io('http://localhost:8000');
-        socketRef.current.on('receive-message', (message, room, recordedTime)=>{
-            // selectedConversationId
-            let id;
-            setSelectedConversationId((prevId)=>{
-                id = prevId;
-                return prevId;
-            });
-            
-            // calling updateChatOverview utility function to show recent message on ConversationOverview of every connected socket(except the sender)
-            updateChatOverview(setChats, id, message, recordedTime);
-            console.log('message received');
+        if(user){
+            checkNotificationsUpdate(user._id, setUnreadNotificationsPresent);
+        }
+    }, [user, setUnreadNotificationsPresent])
 
-            // if selectedConversationId is same as of which chat's new Message is received
-            if(id===room){
-                setMessages((messages)=>{
-                    return [...messages, message]
-                });
-            }else{
-                alert('New message received');
+
+
+
+
+
+
+    useEffect(()=>{
+        // function to mark the lastest(newest)(single) messages notification of this user as opened(true)
+        const updateLatestNotification = async ()=>{
+            try{
+                const res = await fetch(`/notifications?type=${"message"}`, {
+                    method: 'PUT',
+                    credentials: 'include'
+                })
+
+                if(!res.ok){
+                    throw new Error(res.statusText)
+                }
+
+                await res.json();
+
+                setUnreadMessagesPresent(false);
+
+            }catch(e){
+                console.log(e);
             }
-        });
-    }, [])
+        }
+
+        updateLatestNotification();
+        
+    }, [setUnreadMessagesPresent])
+
+
+
+
+
+
+
+    useEffect(()=>{
+        // making request to backend to fetch notifications
+        const fetchMessagesNotifications = async ()=>{
+            try{
+                let res = await fetch(`/notifications/?type=${"message"}`, {
+                        credentials: 'include'
+                });
+        
+                if(!res.ok){
+                    throw new Error(res.statusText);
+                }
+        
+                const data = await res.json();
+                setMessagesNotifications(data.notifications);                        
+        
+            }catch(e){
+                console.log(e);
+            }
+        }
+        
+        fetchMessagesNotifications();
+        
+
+    }, [setMessagesNotifications])
+
+
+
+
+    
+
+
 
 
 
@@ -87,6 +142,8 @@ const Messages = ()=>{
     const [showGrpSearchLoader, setShowGrpSearchLoader] = useState(false);
     // state that will contain users selected to add in new group
     const [addedGrpUsers, setAddedGrpUsers] = useState([]);
+    // state to show or hide create group button loader
+    const [showCreateGrpLoader, setShowCreateGrpLoader] = useState(false)
 
 
 
@@ -149,26 +206,6 @@ const Messages = ()=>{
         }
     }, [showChatSearch])
 
-    // useEffect to fetch user's chat history from database when the messages page is rendered
-    useEffect(()=>{
-        const fetchChatHistory = async ()=>{
-            try{
-                const res = await fetch('/chats');
-
-                if(!res.ok){
-                    throw new Error(res.statusText);
-                }
-
-                const data = await res.json();
-
-                setChats(data.chats);
-            }catch(e){
-                console.log(e);
-            }
-        }
-        fetchChatHistory();
-    }, [])
-
 
 
     // References of search input field of search user for chat component
@@ -183,8 +220,6 @@ const Messages = ()=>{
 
 
 
-    // getting values & methods from global state
-    const [, , user, setUser] = useContext(Context);
 
     const navigate = useNavigate();
 
@@ -264,15 +299,20 @@ const Messages = ()=>{
     }
 
     // handler that will add user to grp when clicked on any group search result user
-    const addUserToGrp = (user)=>{
+    const addUserToGrp = (newUser)=>{
+        // checking the clicked user is same who created the group if yes then return
+        if(newUser._id===user._id){
+            alert('You are already in this group');
+            return;
+        }
         // checking user already present in grp or not
-        for(let u of addedGrpUsers){
-            if(u._id===user._id){
+        for(let u of addedGrpUsers){ 
+            if(u._id===newUser._id){
                 alert('User already added');
                 return;
             }
         }
-        setAddedGrpUsers([...addedGrpUsers, user]);
+        setAddedGrpUsers([...addedGrpUsers, newUser]);
     }
 
     // handler that will remove user from grp when clicked on cross icon of any added group users
@@ -281,6 +321,67 @@ const Messages = ()=>{
             return user._id!==userId;
         });
         setAddedGrpUsers(updatedAddedGrpUsers);
+    }
+
+
+    const handleCreateGrpSubmit = async (event)=>{
+        event.preventDefault();
+
+        if(!grpInfo.subject.trim()){
+            alert('Please enter group subject');
+            return;
+        }
+
+        setShowCreateGrpLoader(true);
+        try{
+            let users = addedGrpUsers.map((user)=>{
+                return user._id;
+            })
+
+            let formData = new FormData();
+            formData.append('isGrp', true);
+            formData.append('grpAvatar', selectedFile);
+            formData.append('grpSubject', grpInfo.subject.trim());
+            formData.append('grpDesc', grpInfo.desc.trim());
+            formData.append('users', users);
+            formData.append('grpCreatorName', user.name);
+            
+            
+            const res = await fetch('/chats', {
+                method:'POST',
+                credentials:'include',
+                body:formData
+            })
+
+            if(!res.ok){
+                throw new Error(res.statusText);
+            }
+
+            const data = await res.json();
+
+            // adding new chat to chat history
+            setChats([data.savedChat, ...chats]);
+
+
+
+            // reseting values
+            setShowCreateGrp(false);
+            setSelectedFile('');
+            setPreview('');
+            setGrpInfo({subject:'', desc:''});
+            setSearchGrpUserVal('');
+            setSearchedGrpUsers([]);
+            setAddedGrpUsers([]);
+            setShowCreateGrpLoader(false);
+            setSelectedConversationInfo(data.savedChat);
+            setSelectedConversationId(data.savedChat._id);
+            setShowConversation(true);
+
+            console.log(data);
+        }catch(e){
+            setShowCreateGrpLoader(false);
+            console.log(e);
+        }
     }
 
 
@@ -396,11 +497,11 @@ const Messages = ()=>{
                         </Link>
                         <div className='search-and-grp-btns'>
                             <motion.i className="fas fa-search chat-search-btn" onClick={()=>setShowChatSearch(true)}
-                                initial={{background:'rgb(76, 180, 158)'}}
+                                initial={{background:'#fff'}}
                                 whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
                             ></motion.i>
                             <motion.span className='create-group-btn' onClick={()=>setShowCreateGrp(true)}
-                                initial={{background:'rgb(76, 180, 158)'}}
+                                initial={{background:'#fff'}}
                                 whileTap={{background:'rgba(53, 53, 53, 0.05)'}} 
                             >
                                 <i className="fas fa-users"></i><i className="fas fa-plus" style={{fontSize:'0.7rem'}}></i>
@@ -410,15 +511,24 @@ const Messages = ()=>{
 
                     <div className='all-conversations'>
                         {
-                            chats.length
+                            chats.length && chats[0]
                             ?
                             chats.map((chat)=>{
                                 return(
-                                    <ConversationOverview key={chat._id} showConversation={showConversation} setShowConversation={setShowConversation} selectedConversationId={selectedConversationId} setSelectedConversationId={setSelectedConversationId} setSelectedConversationInfo={setSelectedConversationInfo} chat={chat} setMessages={setMessages} socket={socketRef.current} chats={chats} setChats={setChats} />
+                                    <ConversationOverview key={chat._id} showConversation={showConversation} setShowConversation={setShowConversation} chat={chat} setShowUpdateGrp={setShowUpdateGrp} />
                                 )
                             }) 
                             :
-                            null
+                                !chatHistoryFetched
+                                ?
+                                <>
+                                    <NotificationSkeleton/>
+                                    <NotificationSkeleton/>
+                                    <NotificationSkeleton/>
+                                    <NotificationSkeleton/>
+                                </>
+                                :
+                                null
                         }
                     </div>
 
@@ -430,7 +540,7 @@ const Messages = ()=>{
                         >
                             <div className='chat-search-input'>
                                 <motion.div className='chat-search-back' onClick={()=>setShowChatSearch(false)}
-                                    initial={{background:'rgb(76, 180, 158)'}}
+                                    initial={{background:'#fff'}}
                                     whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
                                 >
                                     <i className="fas fa-arrow-left"></i>
@@ -477,7 +587,7 @@ const Messages = ()=>{
                         >
                             <div className='create-grp-heading'>
                                 <motion.div className='create-grp-back' onClick={()=>setShowCreateGrp(false)}
-                                    initial={{background:'rgb(76, 180, 158)'}}
+                                    initial={{background:'#fff'}}
                                     whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
                                 >
                                     <i className="fas fa-arrow-left"></i>
@@ -486,7 +596,7 @@ const Messages = ()=>{
                             </div>
 
                             <div className='create-grp-form-wrapper'>
-                                <form>
+                                <form onSubmit={handleCreateGrpSubmit} encType='multipart/form-data'>
                                     <div className='choose-grp-icon'>
                                         {
                                             selectedFile
@@ -495,7 +605,7 @@ const Messages = ()=>{
                                             :
                                             <i className="fas fa-camera"></i>
                                         }
-                                        <input type='file' className='choose-grp-icon-input' accept='image/*' onChange={onSelectingFile} />
+                                        <input type='file' className='choose-grp-icon-input' accept='image/*' onChange={onSelectingFile} name='grpAvatar' />
                                     </div>
                                     <p className='choose-grp-icon-text'>Choose group icon</p>
 
@@ -583,7 +693,20 @@ const Messages = ()=>{
                                         null
                                     }
 
-                                    <button className='create-grp-btn'>Create Group</button>
+                                    <motion.button type='submit' className='create-grp-btn' disabled={showCreateGrpLoader}
+                                        initial={{scale:1}}
+                                        whileTap={{scale:0.85}}
+                                    >
+                                        {
+                                            showCreateGrpLoader
+                                            ?
+                                            <img src='/images/spiner2.gif' alt='loader' />
+                                            :
+                                            <>
+                                            Create Group
+                                            </>
+                                        }
+                                    </motion.button>
                                 </form>
                             </div>
                         </motion.div>
@@ -594,10 +717,10 @@ const Messages = ()=>{
                     ?
                     <div className='conversation-container'>
                         {
-                            showUpdateGrp && <UpdateGrp setShowUpdateGrp={setShowUpdateGrp}/>   
+                            showUpdateGrp && <UpdateGrp setShowUpdateGrp={setShowUpdateGrp} setShowConversation={setShowConversation}/>   
                         }
-                        <ConversationHeader setShowUpdateGrp={setShowUpdateGrp} setShowConversation={setShowConversation} selectedConversationInfo={selectedConversationInfo}/>
-                        <ConversationMessages selectedConversationId={selectedConversationId} setChats={setChats} messages={messages} setMessages={setMessages} socket={socketRef.current}/>
+                        <ConversationHeader setShowUpdateGrp={setShowUpdateGrp} setShowConversation={setShowConversation} />
+                        <ConversationMessages/>
                     </div>
                     :
                     <div className='not-chatting-wrapper'>

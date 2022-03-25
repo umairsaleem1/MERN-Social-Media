@@ -3,21 +3,26 @@ import { motion } from 'framer-motion';
 import EditGrpSettingsModal from '../editGrpSettingsModal/EditGrpSettingsModal';
 import './grpSettings.css';
 
-const GrpSettings = ( { setShowGrpSettings } )=>{
+const GrpSettings = ( { setShowGrpSettings, grpSendMessages, grpEditInfo } )=>{
+    
+    // getting values & methods from global state
+    // const [, , , , , , socketRef, , , , , , , , , selectedConversationInfo, setSelectedConversationInfo, chats, setChats, messages, setMessages] = useContext(Context);
+
+
     // state to show or hide Grp Info settings modal
     const [showInfoModal, setShowInfoModal] = useState(false);
     // state to show or hide Grp Messages settings modal
     const [showMessagesModal, setShowMessagesModal] = useState(false);
 
     return(
-        <motion.div className='grp-settings-container' 
+        <motion.div className='grp-settings-container'  
             initial={{x:'100%'}}
             animate={{x:0}}
             transition={{type:'tween'}}
         >
             <div className='grp-settings-header'>
                 <motion.div className='grp-settings-back' onClick={()=>setShowGrpSettings(false)}
-                    initial={{background:'rgb(76, 180, 158)'}}
+                    initial={{background:'#fff'}}
                     whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
                 >
                     <i className="fas fa-arrow-left"></i>
@@ -27,31 +32,46 @@ const GrpSettings = ( { setShowGrpSettings } )=>{
 
 
             <div className='grp-settings'>
-                <div className='edit-grp-info-authority' onClick={()=>setShowInfoModal(true)}>
+                <motion.div className='edit-grp-info-authority' onClick={()=>setTimeout(()=>setShowInfoModal(true), 200)}
+                    initial={{background:'#fff'}}
+                    whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
+                >
                     <p>Edit group info</p>
-                    <span>All participants</span>
-                </div>
+                    {
+                        grpEditInfo==='all'
+                        ?
+                        <span>All participants</span>
+                        :
+                        <span>Only admins</span>
+                    }
+                </motion.div>
 
                 <div className='edit-grp-info-authority-desc'>
                     <p>Choose who can change this group's subject, icon and description setting.</p>
                 </div>
 
-                <div className='send-messages-authority' onClick={()=>setShowMessagesModal(true)}>
+                <motion.div className='send-messages-authority' onClick={()=>setTimeout(()=>setShowMessagesModal(true), 200)}
+                    initial={{background:'#fff'}}
+                    whileTap={{background:'rgba(53, 53, 53, 0.05)'}}
+                >
                     <p>Send messages</p>
-                    <span>All participants</span>
-                </div>
+                    {
+                        grpSendMessages==='all'
+                        ?
+                        <span>All participants</span>
+                        :
+                        <span>Only admins</span>
+                    }
+                </motion.div>
 
-                <div className='edit-grp-admins-authority'>
-                    <p>Edit group admins</p>
-                </div>
             </div>
 
 
             {
-                showInfoModal && <EditGrpSettingsModal setShowModal={setShowInfoModal} title='Edit group info' fromInfo={true}/>
+                showInfoModal && <EditGrpSettingsModal setShowModal={setShowInfoModal} title='Edit group info' setting={grpEditInfo} fromInfo={true}/>
             }
             {
-                showMessagesModal && <EditGrpSettingsModal setShowModal={setShowMessagesModal} title='Send messages'/>
+                showMessagesModal && <EditGrpSettingsModal setShowModal={setShowMessagesModal} title='Send messages' setting={grpSendMessages} />
             }
         </motion.div>
     );

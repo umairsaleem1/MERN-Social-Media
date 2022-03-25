@@ -8,6 +8,8 @@ import Home from './pages/home/Home';
 import Profile from './pages/profile/Profile';
 import EditProfile from './pages/editProfile/EditProfile';
 import Messages from './pages/messages/Messages';
+import Notifications from './pages/notifications/Notifications';
+import Error from './pages/error/Error';
 
 
 const App = ()=>{
@@ -22,6 +24,8 @@ const App = ()=>{
         <Route path='/profile/:profileUserId' element={<Profile/>} />
         <Route path='/profile/:profileUserId/edit' element={<EditProfile/>} />
         <Route path='/messages' element={<Messages/>} />
+        <Route path='/notifications' element={<Notifications/>} />
+        <Route path='*' element={<Error/>} />
       </Routes>
     </BrowserRouter>
   )

@@ -9,7 +9,7 @@ const FollowAndFollowing = ( {follow} )=>{
     const { _id, profileImage, name } = follow;
 
      // getting values & methods from global state
-     const [, , user] = useContext(Context);
+     const [, , user, , , , socketRef, onlineUsers] = useContext(Context);
 
      // state that will contain boolean either the logged in user is following this profile or not
     const [isFollowing, setIsFollowing] = useState(user.following.includes(_id));
@@ -23,7 +23,7 @@ const FollowAndFollowing = ( {follow} )=>{
     // handler that will be called when the user clicks on follow or following btn
     const handleFollowAndUnfollow = ()=>{
         // calling the utility function
-        followOrUnfollow(_id, isFollowing, setIsFollowing, setShowFollowLoader);
+        followOrUnfollow(_id, isFollowing, setIsFollowing, setShowFollowLoader, user, socketRef);
     }
 
     return(
@@ -35,6 +35,11 @@ const FollowAndFollowing = ( {follow} )=>{
                         whileTap={{scale:0.85}}
                     />
                 </Link>
+                {
+                    (onlineUsers.includes(String(_id)))
+                    &&
+                    <i className="fas fa-circle" style={{color:'green', fontSize:13, position: 'absolute', bottom: 0, left: 23}}></i>
+                }
                 <Link to={`/profile/${_id}`} className='link-text-decoration'>
                     <p>
                         {

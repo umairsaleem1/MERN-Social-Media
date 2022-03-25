@@ -99,6 +99,28 @@ router.get('/posts', auth, async (req, res)=>{
 
 
 
+// Get a single post
+router.get('/posts/:postId', auth, async (req, res)=>{
+    try{
+        const { postId } = req.params;
+
+        const post = await Post.findOne({_id:postId}).populate('postAuthor').populate('postLikes').populate({path:'postComments', populate:'commentAuthor commentLikes'});
+
+        res.status(200).json({
+            post:post
+        });
+    }catch(e){ 
+        res.status(500).json({  
+            message: 'Some problem occurred'
+        });
+        console.log(e);
+    }
+})
+
+
+
+
+
 
 // Update a post
 router.put('/posts/:id', auth,  upload.single('postMedia'), async (req, res)=>{
@@ -200,13 +222,13 @@ router.delete('/posts/:id', auth, async (req, res)=>{
 
 
 // Like a post
-router.get('/posts/:id', auth, async (req, res)=>{
+router.get('/posts/:id/like', auth, async (req, res)=>{ 
     try{
         // id of the post
         const { id } = req.params;
         // liked is a query parameter that shows either the user has added(true) his like or removed(false) his like from the post
         const { liked } = req.query;
-
+        
         if(liked==='true'){
             // if user liked the post, then adding the user to post likes list
             await Post.findByIdAndUpdate({_id:id}, {$push:{postLikes:req.id}});

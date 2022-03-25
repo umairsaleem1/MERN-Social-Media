@@ -6,17 +6,17 @@ import TimeAgo from 'timeago-react';
 import useSound from 'use-sound';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
-import fetchPosts from '../../utils/fetchPosts';
+// import fetchPosts from '../../utils/fetchPosts';
 import SingleComment from '../singleComment/SingleComment';
 import EditPostModal from '../editPostModal/EditPostModal';
 import Context from '../../context/Context';
 import './singlepost.css';
 import 'react-toastify/dist/ReactToastify.css';
-import likeSound from '../../sounds/like.mp3';
+import likeSound from '../../sounds/like.mp3'; 
 
-const SinglePost = ( { post, loggedInUser, pageNo } )=>{
+const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>{
     const { _id, postText, postMedia, postMediaType, postLocation, postAuthor, postLikes, createdAt } = post;
-    const { profileImage, username, role } = loggedInUser;
+    const { profileImage, username, role, name } = loggedInUser;
 
     const [postComments, setPostComments] = useState(post.postComments);
 
@@ -64,7 +64,7 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
         setTimeout(()=>{
             setShowPostOptions(false);
         }, 200)
-    }, isPostOptionsBtnVisible);
+    }, isPostOptionsBtnVisible); 
 
 
     // state that will contian boolean either to show the post edit modal or hide
@@ -72,7 +72,7 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
 
 
     // getting values & methods from global state
-    const [posts,setPosts, , ,profilePosts ,setProfilePosts] = useContext(Context);
+    const [posts,setPosts, , ,profilePosts ,setProfilePosts, socketRef, onlineUsers] = useContext(Context);
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
@@ -203,12 +203,12 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
         }, 200)
         try{
             // making request to backend to add or remove like of currently loggedIn user
-            const res = await fetch(`/posts/${_id}?liked=${!liked}`);
+            const res = await fetch(`/posts/${_id}/like?liked=${!liked}`);
             if(!res.ok){
                 throw new Error(res.statusText);
             }
-        
-            await res.json();
+            
+            await res.json(); 
 
             // if liked then remove(false) it, otherwise add(true) it in state variable
             if(liked===true){
@@ -220,16 +220,76 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                 postLikes.splice(ind,1);
                 
             }else{
-                postLikes.push(loggedInUser._id);
+                // postLikes.push(loggedInUser._id);
+                postLikes.push(loggedInUser);
             }
             setLiked(!liked);
 
             // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId, pageNo, true);
-            }else{
-                fetchPosts(setPosts, undefined, pageNo, true);
+            // if(profileUserId){
+            //     fetchPosts(setProfilePosts, profileUserId, pageNo, true);
+            // }else{
+            //     fetchPosts(setPosts, undefined, pageNo, true);
+            // }
+
+
+
+
+
+
+            // ############ Creating notification of this new like
+
+            // if the user who liked on post is not same as the postAuthor then only create notification and send it in realtime to the postAuthor
+            if(loggedInUser._id!==postAuthor._id && !liked){
+
+                let formatedName = name.split(' ').map((item)=>{
+                    return item[0].toUpperCase()+item.slice(1)
+                }).join(' ')
+
+
+                let notificationTextType = 'Post.';
+                if(postMediaType==='img'){
+                    notificationTextType = 'Photo.';
+                }else if(postMediaType==='vid'){
+                    notificationTextType = 'Video.';
+                }
+                const newNotification = {
+                    personId: loggedInUser._id,
+                    personName: formatedName,
+                    personProfileImage: profileImage,
+                    notifiedUser: postAuthor._id,
+                    notificationType: 'like',
+                    notificationText: `liked your ${notificationTextType}`,
+                    notificationPost: _id
+                };
+
+
+                // making request to backend to create a new notification of like
+                const notiRes = await fetch('/notifications', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newNotification)
+                })
+
+                if(!notiRes.ok){
+                    throw new Error(notiRes.statusText); 
+                }
+
+                const notiData = await notiRes.json();
+                
+
+                socketRef.current.emit('likeNotification', notiData.savedNotification)
             }
+
+
+
+
+
+            // emitting likeUpdate event to notify all the users about this new like
+            socketRef.current.emit('likePostUpdate', _id, postAuthor._id, loggedInUser, !liked)
            
         }catch(e){
             console.log(e);
@@ -298,6 +358,65 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                 autoClose:3000
             });
 
+
+
+
+
+            // ############ Creating notification of this newly created comment
+
+            // if the user who comment on post is not same as the postAuthor then only create notification and send it in realtime to the postAuthor
+            if(loggedInUser._id!==postAuthor._id){
+
+                let formatedName = name.split(' ').map((item)=>{
+                    return item[0].toUpperCase()+item.slice(1)
+                }).join(' ')
+
+
+                let notificationTextType = 'Post.';
+                if(postMediaType==='img'){
+                    notificationTextType = 'Photo.';
+                }else if(postMediaType==='vid'){
+                    notificationTextType = 'Video.';
+                }
+                const newNotification = {
+                    personId: loggedInUser._id,
+                    personName: formatedName,
+                    personProfileImage: profileImage,
+                    notifiedUser: postAuthor._id,
+                    notificationType: 'comment',
+                    notificationText: `commented on your ${notificationTextType}`,
+                    notificationPost: _id
+                };
+
+
+                // making request to backend to create a new notification of comment
+                const notiRes = await fetch('/notifications', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newNotification)
+                })
+
+                if(!notiRes.ok){
+                    errorMessage = 'OOps! some problem occurred';
+                    throw new Error(notiRes.statusText);
+                }
+
+                const notiData = await notiRes.json();
+                
+
+                socketRef.current.emit('commentNotification', notiData.savedNotification)
+            }
+
+
+
+
+
+            // emitting newCommentUpdate event to notify all the users about this new comment
+            socketRef.current.emit('newCommentUpdate', _id, postAuthor._id, loggedInUser._id, data.createdComment)
+
             
         }catch(e){
             setShowLoader(false);
@@ -321,6 +440,11 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                             whileTap={{scale:0.85}}
                         />
                     </Link>
+                    {
+                        (onlineUsers.includes(String(postAuthor._id)))
+                        &&
+                        <i className="fas fa-circle" style={{color:'green', fontSize:15, position: 'absolute', bottom: 0, left: 30}}></i>
+                    }
                     <span>
                         <Link to={`/profile/${postAuthor._id}`} className='link-text-decoration'>
                             <h4>
@@ -433,6 +557,11 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                                             <Link to={`profile/${postLike._id}`} className='link-text-decoration' key={postLike._id}>
                                                 <div>
                                                     <img src={postLike.profileImage} alt='profile' />
+                                                    {
+                                                        (onlineUsers.includes(String(postLike._id)))
+                                                        &&
+                                                        <i className="fas fa-circle" style={{color:'green', fontSize:12, position: 'absolute', bottom: 3, left: 25}}></i>
+                                                    }
                                                     <h5>
                                                         {
                                                             postLike.name.split(' ').map((item)=>{
@@ -481,10 +610,10 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                 </motion.div>
             </div>
             {
-                showCommentsSection && <div className='post-stats-separator'><hr/></div>
+                (showCommentsSection || fromNotificationDetails) && <div className='post-stats-separator'><hr/></div>
             }
             { 
-                showCommentsSection && <div className='post-comments-section'>
+                (showCommentsSection || fromNotificationDetails) && <div className='post-comments-section'>
                     <div className='mycomment-div'>
                         <form onSubmit={handlePostCommentSubmit} encType='multipart/form-data'>
                             <Link to={`profile/${loggedInUser._id}`}><img src={profileImage} alt='profile' className='profile-image'/></Link>
@@ -543,7 +672,7 @@ const SinglePost = ( { post, loggedInUser, pageNo } )=>{
                         {
                             postComments.length
                             ?
-                            postComments.map((postComment)=>{
+                            postComments.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt)).map((postComment)=>{
                                 return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor} postComments={postComments} setPostComments={setPostComments} pageNo={pageNo}/>
                             })
                         

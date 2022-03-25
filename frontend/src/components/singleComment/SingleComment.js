@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import useSound from 'use-sound';
 import { useClickOutside } from '../../utils/useClickOutside';
 import EditCommentModal from '../editCommentModal/EditCommentModal';
-import fetchPosts from '../../utils/fetchPosts';
+// import fetchPosts from '../../utils/fetchPosts';
 import Context from '../../context/Context';
 import './singlecomment.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,7 +16,7 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
     const { _id, commentText, commentImage, commentAuthor, commentLikes, createdAt } = postComment;
 
     // getting values & methods from global state
-    const [,setPosts, user, , ,setProfilePosts] = useContext(Context);
+    const [,setPosts, user, , ,setProfilePosts, socketRef, onlineUsers] = useContext(Context);
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
@@ -54,6 +54,9 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
     // state that will a boolean to either show or hide the comment edit modal
     const [showEditCommentModal, setShowEditCommentModal] = useState(false);
 
+
+    const [showDeleteCommentLoader, setShowDeleteCommentLoader] = useState(false);
+
     // state that will contain a boolean to either show or hide the comment likes persons list
     const [showLikesList, setShowLikesList] = useState(false);
 
@@ -65,7 +68,9 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
 
 
     // handler that will be called when the user clicks on comment delete option
-    const handleCommentDelete = async ()=>{
+    const handleCommentDelete = async (e)=>{
+        e.stopPropagation();
+        setShowDeleteCommentLoader(true);
         let errorMessage;
         try{
             // making request to backend to delete the comment
@@ -89,12 +94,20 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                 return _id!==comment._id;
             })
             setPostComments(newComments);
+            setShowDeleteCommentLoader(false);
 
             toast.success(data.message, {
                 position:"top-center",
                 autoClose:3000
             });
+
+
+
+            // emitting commentDeleteUpdate event to notify all the users about this deleted comment
+            socketRef.current.emit('commentDeleteUpdate', postId, postAuthor._id, user._id, _id)
+
         }catch(e){
+            setShowDeleteCommentLoader(false);
             toast.error(errorMessage, {
                 position:"top-center",
                 autoClose:3000
@@ -133,11 +146,17 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
             setLiked(!liked);
 
             // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            if(profileUserId){
-                fetchPosts(setProfilePosts, profileUserId, pageNo, true);
-            }else{
-                fetchPosts(setPosts, undefined, pageNo, true); 
-            }
+            // if(profileUserId){
+            //     fetchPosts(setProfilePosts, profileUserId, pageNo, true);
+            // }else{
+            //     fetchPosts(setPosts, undefined, pageNo, true); 
+            // }
+
+
+
+
+            // emitting likePostCommentUpdate event to notify all the users about this new like
+            socketRef.current.emit('likePostCommentUpdate', postId, postAuthor._id, _id, user, !liked)
 
         }catch(e){
             console.log(e);
@@ -147,6 +166,11 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
         <>
         <div className='post-single-comment'>
             <Link to={`/profile/${commentAuthor._id}`}><img src={commentAuthor.profileImage} alt='profile' className='single-comment-profile-image'/></Link>
+            {
+                (onlineUsers.includes(String(commentAuthor._id)))
+                &&
+                <i className="fas fa-circle" style={{color:'green', fontSize:15, position: 'absolute', top: 30, left: 50}}></i>
+            }
             <div className='single-comment-text'>
                 <Link to={`/profile/${commentAuthor._id}`} className='link-text-decoration'>
                     <h4>
@@ -170,21 +194,27 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                     {
                         postAuthor.username!==user.username || commentAuthor.username===postAuthor.username
                         ?
-                        <div style={{marginBottom:'10px'}} onClick={()=>setShowEditCommentModal(true)}>
-                            <i className="far fa-edit" style={{color:'green'}}></i>
-                            <p>Edit comment</p>
-                        </div>
+                            <div style={{marginBottom:'10px'}} onClick={()=>setShowEditCommentModal(true)}>
+                                <i className="far fa-edit" style={{color:'green'}}></i>
+                                <p>Edit comment</p>
+                            </div>
                         :
                         null
                     }
-                        <div onClick={handleCommentDelete}>
-                            <i className="far fa-trash-alt" style={{color:'red'}}></i>
-                            <p>Delete comment</p>
-                        </div>
+                        {
+                            showDeleteCommentLoader
+                            ?
+                            <img src='/images/spiner2.gif' alt ='loader' id='commentOptionsLoader' />
+                            :
+                            <div onClick={handleCommentDelete}>
+                                <i className="far fa-trash-alt" style={{color:'red'}}></i>
+                                <p>Delete comment</p>
+                            </div>
+                        }
                 </div>
 
                 {
-                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId} postComments={postComments} setPostComments={setPostComments}/>
+                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId} postAuthorId={postAuthor._id} postComments={postComments} setPostComments={setPostComments}/>
                 }
             </div>
             {

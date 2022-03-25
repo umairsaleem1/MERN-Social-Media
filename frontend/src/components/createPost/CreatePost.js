@@ -34,8 +34,10 @@ const CreatePost = ( { userImage, userId } )=>{
     // reference of textInuput field
     const postTextInputRef = useRef();
 
+    // // getting values & methods from global state
+    const [,setPosts, , , ,setProfilePosts, socketRef] = useContext(Context);
     // getting values & methods from global state
-    const [,setPosts, , , ,setProfilePosts] = useContext(Context);
+    // const [, setPosts, , , , setProfilePosts, socketRef, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , morePostsToSkip, setMorePostsToSkip, moreProfilePostsToSkip, setMoreProfilePostsToSkip] = useContext(Context);
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
@@ -158,6 +160,14 @@ const CreatePost = ( { userImage, userId } )=>{
                 position:"top-center",
                 autoClose:3000
             });
+
+
+
+
+
+
+            // emitting newPostUpdate event to notify all the users about this new post
+            socketRef.current.emit('newPostUpdate', userId, data.createdPost);
             
         }catch(e){
             setShowLoader(false);

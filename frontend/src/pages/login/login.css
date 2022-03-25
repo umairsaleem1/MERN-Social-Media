@@ -3,10 +3,11 @@
     height: auto;
     /* border: 2px solid rgb(235, 234, 234); */
     border-bottom: none;
-    border-radius: 5px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     margin: auto;
     margin-top: 20px;
-    padding: 15px;
+    padding: 20px 30px;
     background-color: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -25,17 +26,22 @@
 }
 .login-inputBox{
     width: 100%;
-    height: 40px;
+    height: 45px;
     margin-top: 5px;
     margin-bottom: 3px;
     outline: none;
-    border: 1px solid rgb(218, 218, 218);
+    border: none;
+    border-radius: 25px;
     padding-left: 45px;
     font-size: 1.2rem;
+    background: #EBEDF0;
+    transition-property: all;
+    transition-duration: 0.3s;
 }
-.login-inputBox:focus{
-    border: 1px solid green;
+.login-inputBox:hover{
+    background: #e1e3e6;
 }
+
 ::placeholder{
     color: rgb(179, 178, 178);
     font-size: 1rem;
@@ -43,7 +49,7 @@
 .login-input-icon{
     position: absolute;
     left: 15px;
-    top: 34px;
+    top: 37.4px;
     font-size: 1.1rem;
     color: grey;
 }
@@ -85,7 +91,7 @@
     transition-duration: 0.2s;
 }
 .login-btn:hover:enabled{
-    opacity: 1;
+    opacity: 1; 
 }
 .login-btn:disabled{
     cursor: not-allowed;

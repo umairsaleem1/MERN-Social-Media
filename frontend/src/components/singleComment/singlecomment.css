@@ -6,6 +6,7 @@
     margin-bottom: 15px;
     display: flex;
     flex-wrap: wrap;
+    position: relative;
 }
 .post-single-comment .single-comment-profile-image{
     height: 45px;
@@ -14,6 +15,7 @@
     border-radius: 50%;
     margin-right: 10px;
     margin-top: 0;
+    background: black;
 }
 .post-single-comment .single-comment-profile-image:hover{
     filter: brightness(95%);
@@ -85,6 +87,13 @@
 }
 .single-comment-options-list div p{
     padding-bottom: 5px;
+}
+
+.single-comment-options-list #commentOptionsLoader{
+    height: 30px;
+    width: 30px;
+    margin-left: 39%;
+    margin-top: 0;
 }
 
 

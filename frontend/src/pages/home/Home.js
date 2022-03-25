@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import io from "socket.io-client";
 import Navbar from '../../components/navbar/Navbar';
 import CreatePost from '../../components/createPost/CreatePost';
 import SinglePost from '../../components/singlePost/SinglePost';
 import { PostSkeleton } from '../../components/skeletons/Skeletons';
 import NoPostOrFollow from '../../components/noPostOrFollow/NoPostOrFollow';
 import authenticateUser from '../../utils/authenticateUser';
-import Context from '../../context/Context';
+import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
+import checkMessagesUpdate from '../../utils/checkMessagesUpdate';
+import { useSocket } from '../../utils/useSocket';
+import { useJoinChats } from '../../utils/useJoinChats';
+import Context from '../../context/Context'; 
 import './home.css';
 
 const Home = ()=>{
 
     // getting values & methods from global state
-    const [posts, setPosts, user, setUser] = useContext(Context);
+    // const [posts, setPosts, user, setUser, , , socketRef, , setOnlineUsers] = useContext(Context);
+    const [posts, setPosts, user, setUser, , , socketRef, , setOnlineUsers, , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
 
     // state that will contain boolean that either request to fetch post from backend is completed or not
     const [postFetchingCompleted, setPostFetchingCompleted] = useState(false);
@@ -25,8 +31,36 @@ const Home = ()=>{
     const [hasMorePosts, setHasMorePosts] = useState(true);
 
 
+    // calling custom hook for all the socket related stuff
+    useSocket();
+    // calling custom hook to fetch and then join all chats of currently logged in user
+    useJoinChats();
+
+
 
     const navigate = useNavigate();
+
+
+
+    // connecting socket instance(user) to backend & registering events if the socket(user) is not already connected
+    useEffect(()=>{
+        if(user){
+            if(!socketRef.current){
+                socketRef.current = io('http://localhost:8000');
+
+
+                socketRef.current.on('connect', ()=>{
+                    // firing newConnection event when socket(user) is successfylly connected to server along with user's id as data
+                    socketRef.current.emit('newConnection', user._id);
+                });
+
+                socketRef.current.on('onlineUsers', (users)=>{
+                    setOnlineUsers(users);
+                })
+
+            }
+        }
+    }, [socketRef, user, setOnlineUsers])
 
 
 
@@ -38,6 +72,22 @@ const Home = ()=>{
         authenticateUser(setUser, navigate);
 
     }, [navigate, setUser])
+
+
+    // making call to backend to check if any new notifications present which the user has not opened yet or not(to show update indicator on top if the use has not opened the new notifications yet)
+    useEffect(()=>{
+        if(user){
+            checkNotificationsUpdate(user._id, setUnreadNotificationsPresent);
+        }
+    }, [user, setUnreadNotificationsPresent])
+
+
+
+    useEffect(()=>{
+        if(user){
+            checkMessagesUpdate(user._id, setUnreadMessagesPresent);
+        }
+    }, [user, setUnreadMessagesPresent])
 
 
 

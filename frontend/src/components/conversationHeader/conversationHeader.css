@@ -1,16 +1,16 @@
 .conversation-header{
     height: 60px;
-    background: rgb(76, 180, 158);
+    background: white;
     border-top-right-radius: 8px;
     padding: 0px 20px;
     border-bottom: 1px solid rgb(223, 223, 223);
-    border-left: 1px solid rgb(190, 190, 190);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 .back-and-chat-name{
     height: 100%;
+    width: calc(100% - 80px);
     display: flex;
     align-items: center;
     /* border: 1px solid red; */
@@ -24,10 +24,12 @@
     color: white;
     cursor: pointer;
     margin-right: 10px;
+    color: #1B74E4;
 } 
 .back-and-chat-name span{
     /* border: 1px solid green; */
     height: 100%;
+    width: calc(100% - 55px);
     display: flex;
     align-items: center;
 }
@@ -37,26 +39,38 @@
     border-radius: 50%;
     margin-right: 13px;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    background: black;
 }
 .back-and-chat-name span div{
     display: flex;
     flex-direction: column;
+    /* border: 1px solid blue; */
+    width: calc(100% - 58px);
 }
 .back-and-chat-name span div p{
-    color: white;
     font-weight: bold;
+    color: #292d30;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .back-and-chat-name span div span{
-    color: white;
+    color: #00000099;
     font-size: 0.8rem;
     border: none;
     margin-top: 3px;
+    /* border: 1px solid red; */
+    width: 90%;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .view-grp-details-btn{
     padding: 10px 12px;
     padding-top: 14px;
     border-radius: 50%;
     font-size: 1.3rem;
-    color: white;
+    color: #1B74E4;
     cursor: pointer;
 }

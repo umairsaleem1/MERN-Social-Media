@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import SendMessage from '../sendMessage/SendMessage';
 import './imageMessagePreview.css';
 
-const ImageMessagePreview = ( { selectedFile, setSelectedFile, preview, setPreview, message, setMessage, selectedConversationId, setMessages, socket, setChats } )=>{
+const ImageMessagePreview = ( { selectedFile, setSelectedFile, preview, setPreview, message, setMessage } )=>{
 
+    
 
     const cancelImagePreview = ()=>{
         setSelectedFile(undefined);
@@ -17,7 +18,7 @@ const ImageMessagePreview = ( { selectedFile, setSelectedFile, preview, setPrevi
             transition={{type:'tween'}}
         >
             <motion.span className='cross-icon-wrapper' onClick={cancelImagePreview}
-                initial={{background:'#eef3f8'}}
+                initial={{background:'#fff'}}
                 whileTap={{background:'rgb(212, 212, 212)'}}
             >
                 <svg viewBox="0 0 24 24" width="26" height="26">
@@ -30,7 +31,7 @@ const ImageMessagePreview = ( { selectedFile, setSelectedFile, preview, setPrevi
                 animate={{opacity:1, delay:3}}
             />
 
-            <SendMessage selectedFile={selectedFile} setSelectedFile={setSelectedFile} setPreview={setPreview} message={message} setMessage={setMessage} selectedConversationId={selectedConversationId} setMessages={setMessages} socket={socket} setChats={setChats} />
+            <SendMessage selectedFile={selectedFile} setSelectedFile={setSelectedFile} setPreview={setPreview} message={message} setMessage={setMessage} />
         </div>
     );
 }

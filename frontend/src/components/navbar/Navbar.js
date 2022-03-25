@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Link, NavLink, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
 import searchUser from '../../utils/searchUser';
 import Context from '../../context/Context';
 import './navbar.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Navbar = ()=>{
     // state that will contain the value of searchBox input
     const [name, setName] = useState('');
 
     // getting values & methods from global state
-    const [, , user] = useContext(Context);
+    const [, , user, , , , , , , , , , , , , , , , , , , , , , , , , , , , , unreadNotificationsPresent, , unreadMessagesPresent] = useContext(Context);
 
     // state to show or hide the expanded search box
     const [expandSearch, setExpandSearch] = useState(false);
@@ -40,6 +42,8 @@ const Navbar = ()=>{
 
     const [showLoader, setShowLoader] = useState(false);
 
+    const [showLogoutLoader, setShowLogoutLoader] = useState(false);
+
 
 
 
@@ -49,6 +53,10 @@ const Navbar = ()=>{
         setUsers([]);
         setExpandSearch(false);
     }, [profileUserId])
+
+
+    const navigate = useNavigate();
+
 
 
     const handleSearchInputClick = ()=>{
@@ -74,8 +82,36 @@ const Navbar = ()=>{
         // calling the utility function to search matched user in database
         searchUser(val, setShowLoader, setUsers);
     }
+
+
+
+    const logoutUser = async ()=>{
+        setShowLogoutLoader(true);
+
+        try{
+            const res = await fetch('/logout');
+
+            if(!res.ok){
+                throw new Error(res.statusText);
+            }
+
+            await res.json();
+
+            setShowLogoutLoader(false);
+            navigate('/login');
+
+        }catch(e){
+            setShowLogoutLoader(false);
+            toast.error('Logout Unsuccessfull', {
+                position:"top-center",
+                autoClose:3000
+            });
+            console.log(e);
+        }
+    }
     
     return(
+        <>
         <div className='navbar'>
             <div className='logo-and-search-container'>
                 <Link to='/' className='navbar-logo-link'>
@@ -138,10 +174,16 @@ const Navbar = ()=>{
                     <span className='tooltiptext'>Home</span>
                 </NavLink>
                 <NavLink to='/messages' className={({ isActive }) => 'navbar-link tooltip' + (isActive?' active-navbar-link':'')}>
+                    {
+                        unreadMessagesPresent && <i className="fas fa-circle" style={{color:'red', fontSize:10, position:'absolute', left:70, top:10}}></i>
+                    }
                     <i className="fas fa-comment-dots"></i>
                     <span className='tooltiptext'>Messages</span>
                 </NavLink>
                 <NavLink to='/notifications' className={({ isActive }) => 'navbar-link tooltip' + (isActive?' active-navbar-link':'')}>
+                    {
+                        unreadNotificationsPresent && <i className="fas fa-circle" style={{color:'red', fontSize:10, position:'absolute', left:65, top:10}}></i>
+                    }
                     <i className="fas fa-bell"></i>
                     <span className='tooltiptext'>Notifications</span>
                 </NavLink>
@@ -187,29 +229,26 @@ const Navbar = ()=>{
 
                     <hr/>
 
-                    <Link to='/settings' className='link-text-decoration'>
-                        <div className='dropdown-settings-div'>
-                            <div className='dropdown-settings-left'>
-                                <div><i className="fas fa-cog"></i></div>
-                                <p>Settings</p>
-                            </div>
-                            <div className='dropdown-settings-right'>
-                            <i className="fas fa-chevron-right"></i>
-                            </div>
-                        </div>
-                    </Link>
-
-                    <Link to='/logout' className='link-text-decoration'>
+                    {
+                        showLogoutLoader
+                        ?
                         <div className='dropdown-logout-div'>
+                            <img src='/images/spiner2.gif' alt='loader' />
+                        </div>
+                        :
+                        <div className='dropdown-logout-div' onClick={logoutUser}>
                             <div>
                                 <i className="fas fa-sign-out-alt"></i>
                             </div>
                             <p>Log Out</p>
                         </div>
-                    </Link>
+                    }
+
                 </div>
             </div>
         </div>
+        <ToastContainer theme='colored'/>
+        </>
     );
 }
 

@@ -6,9 +6,15 @@ import { ToastContainer, toast } from 'react-toastify';
 import Context from '../../context/Context';
 import './conversationOverview.css';
 import 'react-toastify/dist/ReactToastify.css';
+ 
+const ConversationOverview = ( { showConversation, setShowConversation, chat, setShowUpdateGrp } )=>{
+    const { _id, users, lastMessage, lastMessageDate, isGrp, grpAvatar, grpSubject } = chat;
 
-const ConversationOverview = ( { showConversation, setShowConversation, selectedConversationId, setSelectedConversationId, setSelectedConversationInfo, chat, setMessages, socket, chats, setChats } )=>{
-    const { _id, users, lastMessage, lastMessageDate } = chat;
+    // getting values & methods from global state
+    const [, , user, , , , , onlineUsers, , isTyping, , typingChatIds, , selectedConversationId, setSelectedConversationId, , setSelectedConversationInfo, chats, setChats, , setMessages, isRecording, , recordingChatIds, , , , , , , , , , , , messagesNotifications] = useContext(Context);
+
+
+
 
     // formatting lastMessageDate
     let formatedDate;
@@ -31,16 +37,29 @@ const ConversationOverview = ( { showConversation, setShowConversation, selected
     }
 
 
-     // getting values & methods from global state
-     const [, , user] = useContext(Context);
+    
 
-
-    // joining all the rooms of user's chat history when the messages page is rendered so that we can listen for new messages from all rooms
+    // state that will contain either any new message is available of this chat that is not read by the receiver(loggedInUser)
+    const [newMessagesAvailable, setNewMessagesAvailable] = useState(false);
+    
+    
     useEffect(()=>{
-        if(socket){
-            socket.emit('join-chat', String(_id));
+        messagesNotifications.forEach((mN)=>{
+            if(_id===mN.notificationChatId){
+                setNewMessagesAvailable(true);
+                return;
+            }
+        })
+        const arr = messagesNotifications.filter((mN)=>{
+            return _id===mN.notificationChatId;
+        })
+        if(!arr.length){
+            setNewMessagesAvailable(false);
         }
-    }, [socket, _id])
+        
+    }, [messagesNotifications, _id])
+
+
 
 
     // state to show or hide delete chat button
@@ -63,6 +82,7 @@ const ConversationOverview = ( { showConversation, setShowConversation, selected
 
     // handler that will be called when the user clicks on any conversation Overview
     const handleConversationOverviewClick = ()=>{
+        setShowUpdateGrp(false);
         setShowConversation(true);
         setSelectedConversationId(_id);
         setSelectedConversationInfo(chat);
@@ -110,43 +130,93 @@ const ConversationOverview = ( { showConversation, setShowConversation, selected
             console.log(e);
         }
     }
+
     
     return( 
         <>
         <div className='conversation-overview' style={selectedConversationId===_id && showConversation ? {background:'#eef3f8'} : null} onClick={handleConversationOverviewClick}>
             <div className='conversation-overview-avatar-container'>
-                <img src={user._id===users[0]._id ? users[1].profileImage : users[0].profileImage} alt='avatar' />
+                {
+                    isGrp
+                    ?
+                    <img src={grpAvatar ? grpAvatar : '/images/grpPlaceholder.png'} alt='grpAvatar' />
+                    :
+                    <>
+                    <img src={user._id===users[0]._id ? users[1].profileImage : users[0].profileImage} alt='avatar' />
+                    {
+                        ((user._id===users[0]._id && onlineUsers.includes(String(users[1]._id))) || (user._id===users[1]._id && onlineUsers.includes(String(users[0]._id))))
+                        &&
+                        <i className="fas fa-circle" style={{color:'green', marginRight:7, fontSize:20, position: 'absolute', bottom: 15, right:0}}></i>
+                    }
+                    </>
+                }
             </div>
             <div className='conversation-overview-info-container'>
                 <div className='conversation-overview-info-container-top'>
                     <p style={!lastMessage ? {marginTop:'13px'} : null}> 
                         {
-                            user._id===users[0]._id
+                            isGrp
                             ?
-                            users[1].name.split(' ').map((item)=>{
-                                return item[0].toUpperCase()+item.slice(1)
-                            }).join(' ')
+                                grpSubject
                             :
-                            users[0].name.split(' ').map((item)=>{
-                                return item[0].toUpperCase()+item.slice(1)
-                            }).join(' ')
+                                user._id===users[0]._id
+                                ?
+                                users[1].name.split(' ').map((item)=>{
+                                    return item[0].toUpperCase()+item.slice(1)
+                                }).join(' ')
+                                :
+                                users[0].name.split(' ').map((item)=>{
+                                    return item[0].toUpperCase()+item.slice(1)
+                                }).join(' ')
                         }
                     </p>
                     {
-                        lastMessageDate && <span> {formatedDate} </span>
+                        lastMessageDate && <span style={newMessagesAvailable ? {color:'green'} : null}> {formatedDate} </span>
                     }
                 </div>
                 <div className='conversation-overview-info-container-bottom'>
-                    <span> 
-                        {
-                            lastMessage
-                            ?
-                            parse(lastMessage)
-                            :
-                            ''
-                        } 
-                    </span>
-                    <i className="fas fa-chevron-down" onClick={toggleDeleteVisibility}></i>
+                    {
+                        (isTyping.includes(String(_id)) && Object.keys(typingChatIds).includes(String(_id))) || (isRecording.includes(String(_id)) && Object.keys(recordingChatIds).includes(String(_id)))
+                        ?
+                        <span style={{color:'green'}}>
+                            {
+                                isTyping.includes(String(_id))
+                                ?
+                                    isGrp
+                                    ?
+                                    typingChatIds[String(_id)] +' is typing...'
+                                    :
+                                    <>
+                                    typing...
+                                    </>
+                                :
+                                    isGrp
+                                    ?
+                                    recordingChatIds[String(_id)] +' is recording audio...'
+                                    :
+                                    <>
+                                    recording audio...
+                                    </>
+                            }
+                        </span>
+                        :
+                        <span style={newMessagesAvailable ? {color:'black'} : null}> 
+                            {
+                                lastMessage
+                                ?
+                                parse(lastMessage)
+                                :
+                                ''
+                            } 
+                        </span>
+                    }
+                    {
+                        newMessagesAvailable
+                        ?
+                        <i className="fas fa-circle" style={{color:'red', fontSize:15, position: 'absolute', bottom: 0, right:0}}></i>
+                        :
+                        !isGrp && <i className="fas fa-chevron-down" onClick={toggleDeleteVisibility}></i>                     
+                    }
                     {
                         showChatDelete && <motion.button className='delete-chat' onClick={()=>deleteChat(_id)} disabled={showLoader}
                             initial={{scale:0}}

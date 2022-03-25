@@ -23,6 +23,7 @@
     width: auto;
     /* border: 1px solid blue; */
     display: flex;
+    position: relative;
 }
 .singlepost .userinfo .userinfo-wrapper img{
     height: 100%;
@@ -31,6 +32,7 @@
     margin-right: 10px;
     cursor: pointer;
     margin-top: 0;
+    background: black;
 }
 .singlepost .userinfo .userinfo-wrapper img:hover{
     filter: brightness(95%);
@@ -206,6 +208,7 @@
     /* border: 1px solid red; */
     transition-property: all;
     transition-duration: 0.3s;
+    position: relative;
 }
 .post-liked-persons .post-liked-person div:hover{
     background: #EBEDF0;
@@ -218,6 +221,7 @@
     border-radius: 50%;
     margin-top: 0;
     margin-right: 5px;
+    background: black;
 }
 .post-liked-persons .post-liked-person div h5{
     margin-top: 5px;
@@ -300,6 +304,7 @@
     border-radius: 50%;
     margin-top: 0;
     margin-right: 10px;
+    background: black;
 }
 .mycomment-div .profile-image:hover{
     filter: brightness(95%); 
