@@ -33,3 +33,21 @@
 .no-post-or-follow button:hover{
     background: #0c4a96;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ################# Responsive style ################# */
+@media only screen and (max-width:960px){
+    .no-post-or-follow{
+        width: 100%;
+        border-radius: 0px;
+    }
+}

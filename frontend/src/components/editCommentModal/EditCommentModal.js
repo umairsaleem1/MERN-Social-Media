@@ -1,29 +1,22 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
-import Context from '../../context/Context';
+import useWindowDimensions from '../../utils/useWindowDimensions';
 import './editCommentModal.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postAuthorId, postComments, setPostComments } )=>{
+const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postComments, setPostComments } )=>{
     const { _id, commentText, commentImage, commentAuthor } = comment;
 
     // state that will contain the textarea input field value
     const [val, setVal] = useState(commentText); 
-
-    // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
-
-    // state to show or hide the emoji picker
     const [showPicker, setShowPicker] = useState(false);
-
-    // state to show or hide edit button loader
     const [showLoader, setShowLoader] = useState(false);
 
     // reference of textareaInuput field
@@ -35,9 +28,9 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postAutho
     }, true);
 
 
+    // using custom hook to get width of window
+    const { width } = useWindowDimensions();
 
-    // getting values & methods from global state
-    const [, , user, , , , socketRef] = useContext(Context);
 
 
 
@@ -147,12 +140,6 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postAutho
             });
 
 
-
-
-
-            // emitting commentEditUpdate event to notify all the users about this edited comment
-            socketRef.current.emit('commentEditUpdate', postId, postAuthorId, user._id, data.updatedComment)
-
         }catch(e){
             setShowLoader(false);
             toast.error(errorMessage, {
@@ -208,7 +195,7 @@ const EditCommentModal = ( { setShowEditCommentModal, comment, postId, postAutho
                         </motion.span>
 
                         {
-                            showPicker && <Picker pickerStyle={{ position: 'absolute', left:'42%', top:-330}} onEmojiClick={onEmojiClick}/>
+                            showPicker && <Picker pickerStyle={width<=536 ? {position: 'absolute', right:0, top:-330} : { position: 'absolute', left:'42%', top:-330}} onEmojiClick={onEmojiClick}/>
                         }
                     </div>
 

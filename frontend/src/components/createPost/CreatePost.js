@@ -4,31 +4,21 @@ import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import Context from '../../context/Context';
+import useWindowDimensions from '../../utils/useWindowDimensions';
 import './createpost.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePost = ( { userImage, userId } )=>{
 
     // state that will contain the text input field value
-    const [val, setVal] = useState('');
-    // state that will contain the location 
+    const [val, setVal] = useState(''); 
     const [location, setLocation] = useState('');
-
-    // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
-
     // state to contain the media type user selected for upload(image or video)
     const [media, setMedia] = useState('');
-
-    // state to show or hide the emoji picker
     const [showPicker, setShowPicker] = useState(false);
-
-    // state to show or hide the location getter
     const [showLocationInput, setShowLocationInput] = useState(false);
-
-    // state to show or hide to loader
     const [showLoader, setShowLoader] = useState(false);
 
     // reference of textInuput field
@@ -36,11 +26,13 @@ const CreatePost = ( { userImage, userId } )=>{
 
     // // getting values & methods from global state
     const [,setPosts, , , ,setProfilePosts, socketRef] = useContext(Context);
-    // getting values & methods from global state
-    // const [, setPosts, , , , setProfilePosts, socketRef, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , morePostsToSkip, setMorePostsToSkip, moreProfilePostsToSkip, setMoreProfilePostsToSkip] = useContext(Context);
+
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
+
+    // custom hook to get current height & width of window
+    const { width } = useWindowDimensions();
 
 
     // create a preview(set url of selected file) , whenever selected file is changed
@@ -167,7 +159,7 @@ const CreatePost = ( { userImage, userId } )=>{
 
 
             // emitting newPostUpdate event to notify all the users about this new post
-            socketRef.current.emit('newPostUpdate', userId, data.createdPost);
+            socketRef.current.emit('newPostUpdate', userId);
             
         }catch(e){
             setShowLoader(false);
@@ -182,7 +174,7 @@ const CreatePost = ( { userImage, userId } )=>{
 
     return(
         <>
-        <div className='create-post'>
+        <div className='create-post' style={width<=580 && !profileUserId ? {marginTop:'-14px'} : null}>
             <form onSubmit={handlePostSubmit} encType='multipart/form-data'>
                 <div className='create-post-top'>
                     <Link to={`/profile/${userId}`}>
@@ -290,7 +282,7 @@ const CreatePost = ( { userImage, userId } )=>{
                     </motion.div>
                 }
                 {
-                    showPicker && <Picker pickerStyle={{ position: 'absolute', left:'42%'}} onEmojiClick={onEmojiClick}/>
+                    showPicker && <Picker pickerStyle={width<=580 ? {position: 'absolute', left:'17%'} : { position: 'absolute', left:'42%'}} onEmojiClick={onEmojiClick}/>
                 }
             </form>
         </div>

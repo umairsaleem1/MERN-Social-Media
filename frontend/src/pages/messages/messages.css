@@ -10,6 +10,14 @@
     display: flex;
 }
 
+.messages-page-loader{
+    position: fixed;
+    top: 40%;
+    left: 48%;
+    height: 60px;
+    width: 60px;
+}
+
 
 
 
@@ -562,3 +570,64 @@
 
 
 
+
+
+
+
+
+
+
+
+/* ########################## Responsive style ######################### */
+@media only screen and (max-width:1450px){
+    .messages-page{
+        height: calc(100vh - 60px);
+        width: 100%;
+        margin-top: 60px;
+        border: none;
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:1050px){
+    .all-conversations-container{
+        width: 40%;
+    }
+    .conversation-container{
+        width: 60%;
+    }
+    .not-chatting-wrapper{
+        width: 60%;
+    }
+    .not-chatting{
+        width: 400px;
+    }
+    .not-chatting img{
+        height: 200px;
+        width: 200px;
+    }
+    .not-chatting h2{
+        font-size: 1.5rem;
+    }
+}
+
+@media only screen and (max-width:670px){
+    .conversation-container{
+        width: 100%;
+    }
+    .not-chatting-wrapper{
+        display: none;
+    }
+}
+
+@media only screen and (max-width:400px){
+    .messages-page-loader{
+        left: 40%;
+    }
+}
+
+@media only screen and (max-width:380px){
+    .create-grp-heading h3{
+        margin-left: 20%;
+    }
+}

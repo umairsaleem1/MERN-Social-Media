@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import io from "socket.io-client";
 import Navbar from '../../components/navbar/Navbar';
 import CreatePost from '../../components/createPost/CreatePost';
 import SinglePost from '../../components/singlePost/SinglePost';
@@ -10,6 +9,7 @@ import NoPostOrFollow from '../../components/noPostOrFollow/NoPostOrFollow';
 import authenticateUser from '../../utils/authenticateUser';
 import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
 import checkMessagesUpdate from '../../utils/checkMessagesUpdate';
+import fetchPosts from '../../utils/fetchPosts';
 import { useSocket } from '../../utils/useSocket';
 import { useJoinChats } from '../../utils/useJoinChats';
 import Context from '../../context/Context'; 
@@ -18,8 +18,7 @@ import './home.css';
 const Home = ()=>{
 
     // getting values & methods from global state
-    // const [posts, setPosts, user, setUser, , , socketRef, , setOnlineUsers] = useContext(Context);
-    const [posts, setPosts, user, setUser, , , socketRef, , setOnlineUsers, , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
+    const [posts, setPosts, user, setUser, , , , , , , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent, , , newPostsAvailable, setNewPostsAvailable] = useContext(Context);
 
     // state that will contain boolean that either request to fetch post from backend is completed or not
     const [postFetchingCompleted, setPostFetchingCompleted] = useState(false);
@@ -29,6 +28,7 @@ const Home = ()=>{
 
     // state that will contain boolean that will show either there has left any more posts to show on home page fetching from database or not
     const [hasMorePosts, setHasMorePosts] = useState(true);
+
 
 
     // calling custom hook for all the socket related stuff
@@ -42,29 +42,12 @@ const Home = ()=>{
 
 
 
-    // connecting socket instance(user) to backend & registering events if the socket(user) is not already connected
+    
+
+
     useEffect(()=>{
-        if(user){
-            if(!socketRef.current){
-                socketRef.current = io('http://localhost:8000');
-
-
-                socketRef.current.on('connect', ()=>{
-                    // firing newConnection event when socket(user) is successfylly connected to server along with user's id as data
-                    socketRef.current.emit('newConnection', user._id);
-                });
-
-                socketRef.current.on('onlineUsers', (users)=>{
-                    setOnlineUsers(users);
-                })
-
-            }
-        }
-    }, [socketRef, user, setOnlineUsers])
-
-
-
-
+        document.title = 'SocialDude'
+    }, [])
 
 
     useEffect(()=>{
@@ -98,6 +81,7 @@ const Home = ()=>{
     }
 
     useEffect(()=>{
+  
         // making request to backend to fetch posts
         const fetchPosts = async ()=>{
             try{
@@ -134,13 +118,35 @@ const Home = ()=>{
         
     }, [pageNo, setPosts])
 
-
-
+    
+    
+    const handleNewPostsBtnClick = ()=>{
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setPostFetchingCompleted(false);
+        setHasMorePosts(true);
+        setPosts([]);
+        setPageNo(1);
+        setNewPostsAvailable(false);
+        fetchPosts(setPosts, undefined, 1);
+        setTimeout(()=>{
+            setPostFetchingCompleted(true);
+        }, 3000)
+        
+    }
+    
     return(
         user
         ?
         <>
             <Navbar/>
+            {
+                newPostsAvailable && <button className='new-posts-available-btn' onClick={handleNewPostsBtnClick}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16" fill="currentColor"  width="16" height="16" focusable="false">
+                        <path d="M13 7L9 4.16V14H7V4.16L3 7V4.55L8 1l5 3.55z"></path>
+                    </svg>
+                    New posts
+                </button>
+            }
             <div className='home-page'>
                 <CreatePost userImage={user.profileImage} userId={user._id}/>
                 <div className='posts' id='posts'>

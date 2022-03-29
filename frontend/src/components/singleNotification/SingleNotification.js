@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
 import Context from '../../context/Context';
 import './singleNotification.css';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 
 const SingleNotification = ( { notification, setViewNotificationDetails, setClickedNotification } )=>{
@@ -66,6 +66,10 @@ const SingleNotification = ( { notification, setViewNotificationDetails, setClic
                     navigate(`/profile/${notification.notificationUserProfileId}`);
 
                 }catch(e){
+                    toast.error('Oops! some problem occurred', {
+                        position:"top-center",
+                        autoClose:3000
+                    });
                     console.log(e);
                 }
             }

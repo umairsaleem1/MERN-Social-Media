@@ -159,7 +159,7 @@ io.on('connection', (socket)=>{
     })
 
 
-    socket.on('newPostUpdate', async (postAuthorId, newPost)=>{
+    socket.on('newPostUpdate', async (postAuthorId)=>{
         const user = await User.findOne({_id: postAuthorId}).select('followers');
         
         let usersToUpdate = [...user.followers];
@@ -170,7 +170,7 @@ io.on('connection', (socket)=>{
         usersToUpdate.forEach((userId)=>{
             if(onlineUsersIds.includes(String(userId))){
                 let index = onlineUsersIds.indexOf(String(userId));
-                io.to(onlineUsersSocketIds[index]).emit('newPostUpdate', newPost);
+                io.to(onlineUsersSocketIds[index]).emit('newPostUpdate');
             }
         })
 
@@ -182,7 +182,7 @@ io.on('connection', (socket)=>{
         
         let usersToUpdate = [...user.followers, postAuthorId];
         usersToUpdate = usersToUpdate.filter((userToUpdate)=>{
-            return userToUpdate!==newLike._id;
+            return String(userToUpdate)!==String(newLike._id);
         })
 
         const onlineUsersIds = Object.values(onlineUsers);
@@ -224,7 +224,7 @@ io.on('connection', (socket)=>{
         
         let usersToUpdate = [...user.followers, postAuthorId];
         usersToUpdate = usersToUpdate.filter((userToUpdate)=>{
-            return userToUpdate!==String(newLike._id);
+            return String(userToUpdate)!==String(newLike._id);
         })
 
         const onlineUsersIds = Object.values(onlineUsers);
@@ -239,47 +239,6 @@ io.on('connection', (socket)=>{
 
     })
 
-
-    socket.on('commentEditUpdate', async (postId, postAuthorId, personWhoEditedId, editedComment)=>{
-        const user = await User.findOne({_id: postAuthorId}).select('followers');
-        
-        let usersToUpdate = [...user.followers, postAuthorId];
-        usersToUpdate = usersToUpdate.filter((userToUpdate)=>{
-            return String(userToUpdate)!==String(personWhoEditedId);
-        })
-
-        const onlineUsersIds = Object.values(onlineUsers);
-        const onlineUsersSocketIds = Object.keys(onlineUsers);
-        
-        usersToUpdate.forEach((userId)=>{
-            if(onlineUsersIds.includes(String(userId))){
-                let index = onlineUsersIds.indexOf(String(userId));
-                io.to(onlineUsersSocketIds[index]).emit('commentEditUpdate', postId, editedComment);
-            }
-        })
-
-    })
-
-
-    socket.on('commentDeleteUpdate', async (postId, postAuthorId, personWhoDeletedId, commentId)=>{
-        const user = await User.findOne({_id: postAuthorId}).select('followers');
-        
-        let usersToUpdate = [...user.followers, postAuthorId];
-        usersToUpdate = usersToUpdate.filter((userToUpdate)=>{
-            return String(userToUpdate)!==String(personWhoDeletedId);
-        })
-
-        const onlineUsersIds = Object.values(onlineUsers);
-        const onlineUsersSocketIds = Object.keys(onlineUsers);
-        
-        usersToUpdate.forEach((userId)=>{
-            if(onlineUsersIds.includes(String(userId))){
-                let index = onlineUsersIds.indexOf(String(userId));
-                io.to(onlineUsersSocketIds[index]).emit('commentDeleteUpdate', postId, commentId);
-            }
-        })
-
-    })
 
 
     // updated online users list when any socket disconnects and then sending updated online users lis to each connected socket

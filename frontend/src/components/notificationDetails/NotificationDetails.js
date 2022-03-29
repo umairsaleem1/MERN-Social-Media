@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
 import SinglePost from '../singlePost/SinglePost';
 import { PostSkeleton } from '../skeletons/Skeletons'
 import Context from '../../context/Context';
+import formatName from '../../utils/formatName';
 import './notificationDetails.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NotificationDetails = ( { notification, setViewNotificationDetails })=>{
 
@@ -28,6 +31,10 @@ const NotificationDetails = ( { notification, setViewNotificationDetails })=>{
 
                 setPost(data.post);
             }catch(e){
+                toast.error('Oops! some problem occurred', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
         }
@@ -80,6 +87,7 @@ const NotificationDetails = ( { notification, setViewNotificationDetails })=>{
 
 
     return(
+        <>
         <div className='notification-details-container'>
             <div className='notification-details-header'>
                 <motion.i className="fas fa-arrow-left" onClick={()=>setViewNotificationDetails(false)}
@@ -89,9 +97,7 @@ const NotificationDetails = ( { notification, setViewNotificationDetails })=>{
                 {
                     user && <h3>
                         {
-                            user.name.split(' ').map((item)=>{
-                                return item[0].toUpperCase()+item.slice(1)
-                            }).join(' ')
+                            formatName(user.name)
                         }
                     </h3>
                 }
@@ -104,6 +110,8 @@ const NotificationDetails = ( { notification, setViewNotificationDetails })=>{
                 <PostSkeleton/>
             }
         </div>
+        <ToastContainer theme='colored'/>
+        </>
     )
 }
 

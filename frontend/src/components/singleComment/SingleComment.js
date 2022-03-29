@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import TimeAgo from 'timeago-react';
 import { ToastContainer, toast } from 'react-toastify';
 import useSound from 'use-sound';
 import { useClickOutside } from '../../utils/useClickOutside';
+import formatName from '../../utils/formatName';
 import EditCommentModal from '../editCommentModal/EditCommentModal';
-// import fetchPosts from '../../utils/fetchPosts';
 import Context from '../../context/Context';
 import './singlecomment.css';
 import 'react-toastify/dist/ReactToastify.css';
 import likeSound from '../../sounds/like.mp3';
 
 
-const SingleComment = ( { postComment, postId, postAuthor, postComments, setPostComments, pageNo } )=>{
+const SingleComment = ( { postComment, postId, postAuthor, postComments, setPostComments } )=>{
     const { _id, commentText, commentImage, commentAuthor, commentLikes, createdAt } = postComment;
 
     // getting values & methods from global state
-    const [,setPosts, user, , ,setProfilePosts, socketRef, onlineUsers] = useContext(Context);
+    const [,, user, , ,, socketRef, onlineUsers] = useContext(Context);
 
-    // getting user's id from url(if present)
-    const { profileUserId } = useParams();
     
     // state that tell either the comment is liked or not
     const [liked, setLiked] = useState(()=>{
@@ -28,11 +26,8 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
         })
     });
 
-    // state that contain value to eihter show or hide comment options list
+ 
     const [showCommentOptions, setShowCommentOptions] = useState(false);
-
-
-    // state that contain either the post options button is visible or not
     const [isCommentOptionsBtnVisible, setIsCommentOptionsBtnVisible] = useState(false);
 
     // using custorm hook form comment options
@@ -51,26 +46,17 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
 
 
 
-    // state that will a boolean to either show or hide the comment edit modal
     const [showEditCommentModal, setShowEditCommentModal] = useState(false);
-
-
-    const [showDeleteCommentLoader, setShowDeleteCommentLoader] = useState(false);
-
-    // state that will contain a boolean to either show or hide the comment likes persons list
     const [showLikesList, setShowLikesList] = useState(false);
-
     const [playLikeSound] = useSound(likeSound);
 
-
+    
 
 
 
 
     // handler that will be called when the user clicks on comment delete option
-    const handleCommentDelete = async (e)=>{
-        e.stopPropagation();
-        setShowDeleteCommentLoader(true);
+    const handleCommentDelete = async ()=>{
         let errorMessage;
         try{
             // making request to backend to delete the comment
@@ -94,7 +80,6 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                 return _id!==comment._id;
             })
             setPostComments(newComments);
-            setShowDeleteCommentLoader(false);
 
             toast.success(data.message, {
                 position:"top-center",
@@ -102,12 +87,7 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
             });
 
 
-
-            // emitting commentDeleteUpdate event to notify all the users about this deleted comment
-            socketRef.current.emit('commentDeleteUpdate', postId, postAuthor._id, user._id, _id)
-
         }catch(e){
-            setShowDeleteCommentLoader(false);
             toast.error(errorMessage, {
                 position:"top-center",
                 autoClose:3000
@@ -141,18 +121,9 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                 let ind = arr.indexOf(user._id);
                 commentLikes.splice(ind,1);
             }else{
-                commentLikes.push({_id:user._id});
+                commentLikes.push(user);
             }
             setLiked(!liked);
-
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            // if(profileUserId){
-            //     fetchPosts(setProfilePosts, profileUserId, pageNo, true);
-            // }else{
-            //     fetchPosts(setPosts, undefined, pageNo, true); 
-            // }
-
-
 
 
             // emitting likePostCommentUpdate event to notify all the users about this new like
@@ -175,9 +146,7 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                 <Link to={`/profile/${commentAuthor._id}`} className='link-text-decoration'>
                     <h4>
                     {
-                        commentAuthor.name.split(' ').map((item)=>{
-                            return item[0].toUpperCase()+item.slice(1)
-                        }).join(' ')
+                        formatName(commentAuthor.name)
                     }
                     </h4>
                 </Link>
@@ -201,20 +170,15 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                         :
                         null
                     }
-                        {
-                            showDeleteCommentLoader
-                            ?
-                            <img src='/images/spiner2.gif' alt ='loader' id='commentOptionsLoader' />
-                            :
-                            <div onClick={handleCommentDelete}>
-                                <i className="far fa-trash-alt" style={{color:'red'}}></i>
-                                <p>Delete comment</p>
-                            </div>
-                        }
+                            
+                        <div onClick={handleCommentDelete}>
+                            <i className="far fa-trash-alt" style={{color:'red'}}></i>
+                            <p>Delete comment</p>
+                        </div>
                 </div>
 
                 {
-                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId} postAuthorId={postAuthor._id} postComments={postComments} setPostComments={setPostComments}/>
+                    showEditCommentModal && <EditCommentModal setShowEditCommentModal={setShowEditCommentModal} comment={postComment} postId={postId} postComments={postComments} setPostComments={setPostComments}/>
                 }
             </div>
             {
@@ -259,9 +223,7 @@ const SingleComment = ( { postComment, postId, postAuthor, postComments, setPost
                                                     <img src={commentLike.profileImage} alt='profile' />
                                                     <h5>
                                                         {
-                                                            commentLike.name.split(' ').map((item)=>{
-                                                                return item[0].toUpperCase()+item.slice(1)
-                                                            }).join(' ')
+                                                            formatName(commentLike.name)
                                                         }
                                                     </h5>
                                                 </div>

@@ -8,7 +8,7 @@ import sendSound from '../sounds/send.mp3';
 
 export const useSocket = (setShowConversation)=>{
     // getting values & methods from global state
-    const [, setPosts, user, , , setProfilePosts, socketRef, , setOnlineUsers, , setIsTyping, , setTypingChatIds, , setSelectedConversationId, , setSelectedConversationInfo, , setChats, , setMessages, , setIsRecording, , setRecordingChatIds, , , , setNotifications, , setMoreNotificationsToSkip, , setUnreadNotificationsPresent, , setUnreadMessagesPresent, , setMessagesNotifications] = useContext(Context);
+    const [, setPosts, user, , , setProfilePosts, socketRef, , setOnlineUsers, , setIsTyping, , setTypingChatIds, , setSelectedConversationId, , setSelectedConversationInfo, , setChats, , setMessages, , setIsRecording, , setRecordingChatIds, , , , setNotifications, , setMoreNotificationsToSkip, , setUnreadNotificationsPresent, , setUnreadMessagesPresent, , setMessagesNotifications, , setNewPostsAvailable] = useContext(Context);
 
 
     const location = useLocation();
@@ -54,8 +54,28 @@ export const useSocket = (setShowConversation)=>{
                     if(location.pathname===`/messages` && id===room){
                         setMessages((messages)=>{
                             return [...messages, message]
-                        })
+                        }) 
                         playSendSound();
+
+                        const updateMessagesNotification = async ()=>{
+                            try{
+                                const res = await fetch(`/notifications/${id}?&type=${"message"}`, {
+                                    method: 'PUT',
+                                    credentials: 'include'
+                                })
+                
+                                if(!res.ok){
+                                    throw new Error(res.statusText)
+                                }
+                
+                                await res.json();
+                
+                            }catch(e){
+                                console.log(e);
+                            }
+                        }
+                        updateMessagesNotification();
+
                     }else{
                         // alert('New message received');
                         if(location.pathname!=='/messages'){
@@ -634,8 +654,8 @@ export const useSocket = (setShowConversation)=>{
 
 
 
-                socketRef.current.on('newPostUpdate', (newPost)=>{
-                    
+                socketRef.current.on('newPostUpdate', ()=>{
+                    setNewPostsAvailable(true);
                 })
 
 
@@ -788,93 +808,8 @@ export const useSocket = (setShowConversation)=>{
                 })
 
 
-
-                socketRef.current.on('commentEditUpdate', (postId, editedComment)=>{
-                    setPosts((posts)=>{
-                        let updatedPosts = posts.map((post)=>{
-                            if(String(post._id)===String(postId)){
-                                let updatedPost = post;
-                                let updatedComments = updatedPost.postComments.map((postComment)=>{
-                                    if(postComment._id===editedComment._id){
-                                        return editedComment;
-                                    }else{
-                                        return postComment;
-                                    }
-                                })
-                                updatedPost.postComments = updatedComments;
-                                return updatedPost;
-                            }else{
-                                return post;
-                            }
-                        })
-                        return updatedPosts;
-
-                    })
-
-
-                    setProfilePosts((posts)=>{
-                        let updatedPosts = posts.map((post)=>{
-                            if(String(post._id)===String(postId)){
-                                let updatedPost = post;
-                                let updatedComments = updatedPost.postComments.map((postComment)=>{
-                                    if(postComment._id===editedComment._id){
-                                        return editedComment;
-                                    }else{
-                                        return postComment;
-                                    }
-                                })
-                                updatedPost.postComments = updatedComments;
-                                return updatedPost;
-                            }else{
-                                return post;
-                            }
-                        })
-                        return updatedPosts;
-
-                    })
-                })
-
-
-
-                socketRef.current.on('commentDeleteUpdate', (postId, commentId)=>{
-                    setPosts((posts)=>{
-                        let updatedPosts = posts.map((post)=>{
-                            if(String(post._id)===String(postId)){
-                                let updatedPost = post;
-                                let updatedComments = updatedPost.postComments.filter((postComment)=>{
-                                    return String(postComment._id)!==String(commentId);
-                                })
-                                updatedPost.postComments = updatedComments;
-                                return updatedPost;
-                            }else{
-                                return post;
-                            }
-                        })
-                        return updatedPosts;
-
-                    })
-
-
-                    setProfilePosts((posts)=>{
-                        let updatedPosts = posts.map((post)=>{
-                            if(String(post._id)===String(postId)){
-                                let updatedPost = post;
-                                let updatedComments = updatedPost.postComments.filter((postComment)=>{
-                                    return String(postComment._id)!==String(commentId);
-                                })
-                                updatedPost.postComments = updatedComments;
-                                return updatedPost;
-                            }else{
-                                return post;
-                            }
-                        })
-                        return updatedPosts;
-
-                    })
-                })
-
             } 
         }
-    }, [socketRef, user, setOnlineUsers, setIsTyping, setTypingChatIds, setSelectedConversationId, setSelectedConversationInfo, setChats, setMessages, setIsRecording, setRecordingChatIds, setShowConversation, setNotifications, setMoreNotificationsToSkip, setUnreadNotificationsPresent, location.pathname, location.search, playSendSound, setUnreadMessagesPresent, setMessagesNotifications, setPosts, setProfilePosts])
+    }, [socketRef, user, setOnlineUsers, setIsTyping, setTypingChatIds, setSelectedConversationId, setSelectedConversationInfo, setChats, setMessages, setIsRecording, setRecordingChatIds, setShowConversation, setNotifications, setMoreNotificationsToSkip, setUnreadNotificationsPresent, location.pathname, location.search, playSendSound, setUnreadMessagesPresent, setMessagesNotifications, setPosts, setProfilePosts, setNewPostsAvailable])
 }
 

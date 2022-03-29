@@ -72,6 +72,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 50;
     width: 350px;
     /* height: 100px; */
     min-height: 100px;
@@ -214,6 +215,19 @@
 
 
 
+#messages-updates-icon, #notifications-updates-icon{
+    color: red;
+    font-size: 10px;
+    position: absolute;
+    left: 70px;
+    top: 10px;
+}
+#notifications-updates-icon{
+    left: 65px;
+}
+
+
+
 
 
 
@@ -310,6 +324,7 @@
     border-radius: 50%;
     /* border: 1px solid green; */
     margin-right: 10px;
+    background: black;
 }
 .dropdown-profile-div div{
     height: 100%;
@@ -415,4 +430,103 @@
     height: 50px;
     width: 50px;
     margin-left: 38%;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ################ Responsive style ################### */
+@media only screen and (max-width:1190px){
+    .logo-and-search-container{
+        width: 100px;
+    }
+    .navbar-search-container{
+        width: 40px;
+    }
+    .navbar-search-container i{
+        left: 12px;
+    }
+    .navbar-profile-container{
+        width: 100px;
+    }
+    .navbar-profile-image{
+        display: none;
+    }
+}
+
+@media only screen and (max-width:700px){
+    .navbar-links-container{
+        width: 300px;
+    }
+    .navbar-link{
+        padding: 0px 20px;
+    }
+    #messages-updates-icon{
+        left: 50px;
+    }
+    #notifications-updates-icon{
+        left: 45px;
+    }
+    .navbar-profile-container{
+        width: 50px;
+    }
+}
+
+@media only screen and (max-width:550px){
+    .navbar{
+        padding: 0px 10px;
+    }
+    .navbar-links-container{
+        width: 250px;
+    }
+}
+
+@media only screen and (max-width:450px){
+    .navbar-links-container{
+        width: 200px;
+    }
+}
+
+@media only screen and (max-width:400px){
+    .logo-and-search-container{
+        width: 95px;
+    }
+    .navbar-search-expand{
+        width: 100%;
+        border-bottom-right-radius: 0px;
+    }
+    .navbar-logo-link{
+        margin-right: 10px;
+    }
+    .navbar-links-container{
+        width: 180px;
+    }
+    .navbar-link{
+        padding: 0px 15px;
+    }
+    #messages-updates-icon{
+        left: 43px;
+    }
+    #notifications-updates-icon{
+        left: 38px;
+    }
+    .navbar-profile-container{
+        width: 45px;
+    }
+    .profile-dropdown-items{
+        width: 100%;
+        right: 0;
+        top: 54px;
+        border-radius: 0px;
+    }
+    #account-tooltip{
+        display: none;
+    }
 }

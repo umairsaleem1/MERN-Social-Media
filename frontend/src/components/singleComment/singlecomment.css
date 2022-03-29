@@ -192,3 +192,18 @@
     margin-top: 5px;
     color: rgb(53, 116, 175);
 }
+
+
+
+
+
+
+
+
+
+/* ############## Responsive style ############### */
+@media only screen and (max-width:390px){
+    .comment-liked-persons{
+        left: -15px;
+    }
+}

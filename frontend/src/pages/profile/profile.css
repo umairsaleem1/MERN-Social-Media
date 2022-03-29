@@ -1,3 +1,33 @@
+.new-posts-available-btn{
+    position: fixed;
+    top: 90px;
+    left: 45%;
+    padding: 8px 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    border-radius: 15px;
+    background: #1B74E4;
+    box-shadow: 0px 0px 20px -8px black;
+    color: white;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.new-posts-available-btn:hover{
+    background: #0c4a96;
+}
+.new-posts-available-btn svg{
+    margin-right: 5px;
+}
+
+
+
+
+
+
+
 .profile-loader{
     height: 70px;
     width: 70px;
@@ -304,4 +334,103 @@
     margin-bottom: 15px;
     min-height: 300px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ################ Responsive style ################# */
+@media only screen and (max-width:1050px){
+    .cover-photo{
+        width: 95%;
+    }
+    .profile-short-info{
+        width: 85%;
+    }
+    .profile-page-menu-tabs{
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width:960px){
+    .profile-posts, .profile-followers, .profile-following, .profile-about{
+        width: 100%;
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:620px){
+    .profile-posts{
+        margin-top: 30px;
+    }
+    .profile-followers, .profile-following, .profile-about{
+        margin-top: 0px;
+    }
+    .profile-short-info{
+        flex-direction: column;
+        align-items: flex-start;
+        height: 170px;
+    }
+    .profile-photo{
+        top: -110px;
+    }
+    .edit-profile-btn, .profile-follow-btn, .profile-following-btn{
+        top: 5%;
+    }
+    .profile-short-info h1{
+        /* border: 1px solid red; */
+        margin-top: -90px;
+        font-weight: 500;
+    }
+}
+
+@media only screen and (max-width:450px){
+    .cover-photo-wrapper .cover-photo form input, .cover-photo-update-btn{
+        top: 10px;
+        right: 10px;
+    }
+    .profile-short-info{
+        height: 130px;
+    }
+    .profile-photo{
+        height: 150px;
+        width: 150px;
+        top: -85px;
+    }
+    .profile-short-info h1{
+        font-size: 1.8rem;
+        margin-top: -75px;
+    }
+    .profile-page-menu-tabs-wrapper{
+        margin-bottom: 0px;
+    }
+    .profile-page-menu-tabs{
+        width: 95%;
+    }
+    .profile-menu-tab{
+        margin-right: 0px;
+        padding: 0px 10px;
+    }
+}
+
+@media only screen and (max-width:400px){
+    .messages-page-loader{
+        left: 40%;
+    }
+    .profile-loader{
+        height: 60px;
+        width: 60px;
+        left: 40%;
+    }
+}
+
 

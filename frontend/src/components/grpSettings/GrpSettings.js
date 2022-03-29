@@ -5,13 +5,7 @@ import './grpSettings.css';
 
 const GrpSettings = ( { setShowGrpSettings, grpSendMessages, grpEditInfo } )=>{
     
-    // getting values & methods from global state
-    // const [, , , , , , socketRef, , , , , , , , , selectedConversationInfo, setSelectedConversationInfo, chats, setChats, messages, setMessages] = useContext(Context);
-
-
-    // state to show or hide Grp Info settings modal
     const [showInfoModal, setShowInfoModal] = useState(false);
-    // state to show or hide Grp Messages settings modal
     const [showMessagesModal, setShowMessagesModal] = useState(false);
 
     return(

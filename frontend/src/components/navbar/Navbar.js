@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
 import searchUser from '../../utils/searchUser';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './navbar.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,8 +18,6 @@ const Navbar = ()=>{
 
     // state to show or hide the expanded search box
     const [expandSearch, setExpandSearch] = useState(false);
-
-    // state to show or hide the profile drop down list
     const [showDropdown, setShowDropdown] = useState(false);
 
 
@@ -149,9 +148,7 @@ const Navbar = ()=>{
                                                     <img src={user.profileImage} alt='profileImage' />
                                                     <h4>
                                                         {
-                                                            user.name.split(' ').map((item)=>{
-                                                                return item[0].toUpperCase()+item.slice(1)
-                                                            }).join(' ')
+                                                            formatName(user.name)
                                                         }
                                                     </h4>
                                                 </span>
@@ -175,14 +172,14 @@ const Navbar = ()=>{
                 </NavLink>
                 <NavLink to='/messages' className={({ isActive }) => 'navbar-link tooltip' + (isActive?' active-navbar-link':'')}>
                     {
-                        unreadMessagesPresent && <i className="fas fa-circle" style={{color:'red', fontSize:10, position:'absolute', left:70, top:10}}></i>
+                        unreadMessagesPresent && <i className="fas fa-circle" id='messages-updates-icon'></i>
                     }
                     <i className="fas fa-comment-dots"></i>
                     <span className='tooltiptext'>Messages</span>
                 </NavLink>
                 <NavLink to='/notifications' className={({ isActive }) => 'navbar-link tooltip' + (isActive?' active-navbar-link':'')}>
                     {
-                        unreadNotificationsPresent && <i className="fas fa-circle" style={{color:'red', fontSize:10, position:'absolute', left:65, top:10}}></i>
+                        unreadNotificationsPresent && <i className="fas fa-circle" id='notifications-updates-icon'></i>
                     }
                     <i className="fas fa-bell"></i>
                     <span className='tooltiptext'>Notifications</span>
@@ -196,9 +193,7 @@ const Navbar = ()=>{
                         <img src={user.profileImage} alt='user profile' />
                         <h3>
                             {
-                                user.name.split(' ').map((item)=>{
-                                    return item[0].toUpperCase()+item.slice(1)
-                                }).join(' ')
+                                formatName(user.name)
                             }
                         </h3>
                     </div>
@@ -208,7 +203,7 @@ const Navbar = ()=>{
                     whileTap={{scale:0.85}}
                 >
                     <i className="fas fa-caret-down" id='dropdown'></i>
-                    <span className='tooltiptext' style={{marginLeft:-50}}>Account</span>
+                    <span className='tooltiptext' id='account-tooltip' style={{marginLeft:-50}}>Account</span>
                 </motion.div>
                 <div className='profile-dropdown-items' style={showDropdown ? {visibility:'visible'} : {visibility:'hidden'}} ref={dropDown}>
                     <Link to={`/profile/${user._id}`} className='link-text-decoration'>
@@ -217,9 +212,7 @@ const Navbar = ()=>{
                             <div>
                                 <h3>
                                     {
-                                    user.name.split(' ').map((item)=>{
-                                        return item[0].toUpperCase()+item.slice(1)
-                                    }).join(' ')
+                                        formatName(user.name)
                                     }
                                 </h3>
                                 <p>See your profile</p>

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
+import useWindowDimensions from '../../utils/useWindowDimensions';
 import Context from '../../context/Context';
 import './editpostmodal.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,19 +14,11 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
 
     // state that will contain the textarea input field value
     const [val, setVal] = useState(postText);
-
-    // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
-
     // state to contain the media type user selected for upload(image or video)
     const [media, setMedia] = useState(postMediaType);
-
-    // state to show or hide the emoji picker
     const [showPicker, setShowPicker] = useState(false);
-
-    // state to show or hide edit button loader
     const [showLoader, setShowLoader] = useState(false);
 
 
@@ -45,6 +38,9 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
+
+    // using custom hook to get width of window
+    const { width } = useWindowDimensions();
 
 
     
@@ -245,7 +241,7 @@ const EditPostModal = ( { setShowEditPostModal, post } )=>{
                         </motion.span>
 
                         {
-                            showPicker && <Picker pickerStyle={{ position: 'absolute', left:'42%', top:-330}} onEmojiClick={onEmojiClick}/>
+                            showPicker && <Picker pickerStyle={width<=536 ? {position: 'absolute', right:0, top:-330} : { position: 'absolute', left:'42%', top:-330}} onEmojiClick={onEmojiClick}/>
                         }
                     </div>
 

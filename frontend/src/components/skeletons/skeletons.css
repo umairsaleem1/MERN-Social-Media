@@ -179,3 +179,108 @@
     width: 40px;
     margin-left: 30px;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ################# Responsive style ################# */
+@media only screen and (max-width:960px){
+    .post-skeleton-container{
+        width: 100%;
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:684px){
+    .edit-profile-skeleton-container{
+        width: 100%;
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:470px){
+    .skeleton-post-middle{
+        height: 130px;
+    }
+    .skeleton-post-bottom{
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width:1050px){
+    .profile-cover-skeleton{
+        width: 95%;
+    }
+    .profile-short-info-skeleton{
+        width: 85%;
+    }
+    .profile-tabs-skeleton{
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width:620px){
+    .profile-short-info-skeleton{
+        flex-direction: column;
+        align-items: flex-start;
+        height: 170px;
+    }
+    .profile-photo-skeleton{
+        top: -110px;
+    }
+    .profile-btn-skeleton{
+        position: absolute;
+        right: 0;
+        top: 5%;
+    }
+    .profile-name-skeleton{
+        /* border: 1px solid red; */
+        margin-top: 110px;
+        margin-left: 0px;
+    }
+}
+
+@media only screen and (max-width:450px){
+    .profile-cover-skeleton{
+        height: 200px;
+    }
+    .profile-short-info-skeleton{
+        height: 130px;
+    }
+    .profile-photo-skeleton{
+        height: 150px;
+        width: 150px;
+        top: -85px;
+    }
+    .profile-name-skeleton{
+        margin-top: 80px;
+    }
+    .profile-page-menu-tabs-wrapper{
+        margin-bottom: 0px;
+    }
+    .profile-page-menu-tabs{
+        width: 95%;
+    }
+    .profile-menu-tab{
+        margin-right: 0px;
+        padding: 0px 10px;
+    }
+}

@@ -205,3 +205,20 @@
     height: 100%;
     width: 25px;
 }
+
+
+
+
+
+
+
+
+
+
+/* ################### Responsive style ####################### */
+@media only screen and (max-width: 684px){
+    .update-profile-form-container{
+        width: 100%;
+        border-radius: 0px;
+    }
+}

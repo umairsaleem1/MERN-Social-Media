@@ -128,3 +128,25 @@
     text-decoration: none;
     color: rgb(1, 58, 58);
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ################## Responsive style #################### */
+@media only screen and (max-width:684px){
+    .login-form-container{
+        width: 100%;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+    }
+    .forgot-password{
+        width: 100%;
+    }
+}

@@ -23,29 +23,19 @@ const EditProfile = ()=>{
     const [profileUser, setProfileUser] = useState('');
 
 
-    // selectedFile will contain the file that is selected
     const [selectedCoverFile, setSelectedCoverFile] = useState('');
-    // preview will contain the url of selected file
     const [coverPreview, setCoverPreview] = useState();
 
-    // selectedFile will contain the file that is selected
+    // selectedFile will contain the profileImage file that is selected
     const [selectedFile, setSelectedFile] = useState('');
     // preview will contain the url of selected file
     const [preview, setPreview] = useState();
  
-
-    // state to hold form field values
     const [values, setValues] = useState({password:'', cpassword:'', bio:''});
-
     // state for field validation
     const [focused, setFocused] = useState({password:'false', cpassword:'false'});
-
-    // state that contain boolean to eihter show the social media links modal or not
     const [showSocialModal, setShowSocialModal] = useState(false);
-
-    // state that will contain the social links
     const [socialLinks, setSocialLinks] = useState({facebook:'', instagram:'', twitter:''});
-
     const [showUpdateProfileLoader, setShowUpdateProfileLoader] = useState(false);
 
     // getting user's id from url(if present)

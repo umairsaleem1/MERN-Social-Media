@@ -49,3 +49,31 @@
     text-decoration: none;
     color: blue;
 }
+
+
+
+
+
+
+
+
+
+
+/* ################ Responsive style ################# */
+@media only screen and (max-width:684px){
+    .header-message{
+        width: 100%;
+    }
+    .footer-message{
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width:470px){
+    .header-message{
+        margin-top: 20px;
+    }
+    .footer-message{
+        margin-bottom: 40px;
+    }
+}

@@ -445,3 +445,54 @@
     /* border: 1px solid blue; */
     margin-top: 35px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ###################### Responsive style ####################### */
+@media only screen and (max-width:960px){
+    .singlepost{
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:580px){
+    .post-stats-separator{
+        margin-bottom: 0px;
+        margin-top: 0px;
+    }
+    .post-reactions div{
+        padding: 0px 20px;
+        font-size: 1rem;
+    }
+    .singlepost{
+        padding-bottom: 0px;
+    }
+    .post-comments-section{
+        padding-bottom: 5px;
+    }
+}
+
+@media only screen and (max-width:440px){
+    .mycomment-image-preview{
+        width: 200px;
+    }
+}
+
+@media only screen and (max-width:390px){
+    .mycomment-image-preview{
+        width: 160px;
+    }
+}

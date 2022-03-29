@@ -8,6 +8,33 @@
     background: white;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     --T68779821: 0 1px 2px rgba(0, 0, 0, 0.2);
-    margin-top: 75px;
+    margin-top: 60px;
     position: relative;
+}
+.notification-page-loader{
+    position: fixed;
+    top: 40%;
+    left: 48%;
+    height: 60px;
+    width: 60px;
+}
+
+
+
+
+
+
+
+/* ############# Responsive style ############# */
+@media only screen and (max-width:960px){
+    .notifications-container{
+        width: 100%;
+        border-radius: 0px;
+    }
+}
+
+@media only screen and (max-width:400px){
+    .notification-page-loader{
+        left: 40%;
+    }
 }

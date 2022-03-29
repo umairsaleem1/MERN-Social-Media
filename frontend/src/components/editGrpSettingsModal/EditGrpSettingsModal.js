@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { motion } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './editGrpSettingsModal.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const EditGrpSettingsModal = ( { setShowModal, title, setting, fromInfo } )=>{
     
@@ -28,9 +31,7 @@ const EditGrpSettingsModal = ( { setShowModal, title, setting, fromInfo } )=>{
             return;
         }
 
-        const formatedName = user.name.split(' ').map((item)=>{
-            return item[0].toUpperCase()+item.slice(1)
-        }).join(' ');
+        const formatedName = formatName(user.name);
 
 
         setShowLoader(true);
@@ -140,11 +141,16 @@ const EditGrpSettingsModal = ( { setShowModal, title, setting, fromInfo } )=>{
             }
         }catch(e){
             setShowLoader(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
 
     return(
+        <>
         <div className='edit-grp-settings-modal-container'>
             <motion.div className='edit-grp-settings-modal' ref={modal}
                 initial={{scale:0}}
@@ -179,6 +185,8 @@ const EditGrpSettingsModal = ( { setShowModal, title, setting, fromInfo } )=>{
                 </div>
             </motion.div>
         </div>
+        <ToastContainer theme='colored'/>
+        </>
     );
 }
 

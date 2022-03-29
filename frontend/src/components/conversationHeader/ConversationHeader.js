@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './conversationHeader.css';
 
@@ -27,7 +28,7 @@ const ConversationHeader = ( { setShowUpdateGrp, setShowConversation } )=>{
                     {
                         isGrp
                         ?
-                        <img src={grpAvatar ? grpAvatar : '/images/sociallogo.png'} alt='grpAvatar' />
+                        <img src={grpAvatar ? grpAvatar : '/images/grpPlaceholder.png'} alt='grpAvatar' />
                         :
                         <img src={user._id===users[0]._id ? users[1].profileImage : users[0].profileImage} alt='avatar' />
                     }
@@ -40,13 +41,9 @@ const ConversationHeader = ( { setShowUpdateGrp, setShowConversation } )=>{
                                 :
                                     user._id===users[0]._id
                                     ?
-                                    users[1].name.split(' ').map((item)=>{
-                                        return item[0].toUpperCase()+item.slice(1)
-                                    }).join(' ')
+                                    formatName(users[1].name)
                                     :
-                                    users[0].name.split(' ').map((item)=>{
-                                        return item[0].toUpperCase()+item.slice(1)
-                                    }).join(' ')
+                                    formatName(users[0].name)
                             }
                         </p>
                         {

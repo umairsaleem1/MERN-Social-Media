@@ -41,3 +41,18 @@
     border-radius: 0;
     height: 100%;
 }
+
+
+
+
+
+
+
+
+/* ############## Responsive style ############## */
+@media only screen and (max-width:684px){
+    .auth-menu-items{
+        width: 100%;
+    }
+}
+

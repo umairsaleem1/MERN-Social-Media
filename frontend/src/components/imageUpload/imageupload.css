@@ -41,3 +41,23 @@
     display: block;
     margin: auto;
 }
+
+
+
+
+
+
+
+
+/* ################ Responsive style ################# */
+@media only screen and (max-width:470px){
+    .image-upload-box{
+        height: 200px;
+    }
+    .drag-and-drop-icon{
+        margin-top: 10px;
+    }
+    .image-upload-box h3{
+        margin-top: 20px;
+    }
+}

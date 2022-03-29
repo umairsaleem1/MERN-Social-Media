@@ -6,7 +6,7 @@ import TimeAgo from 'timeago-react';
 import useSound from 'use-sound';
 import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
-// import fetchPosts from '../../utils/fetchPosts';
+import formatName from '../../utils/formatName';
 import SingleComment from '../singleComment/SingleComment';
 import EditPostModal from '../editPostModal/EditPostModal';
 import Context from '../../context/Context';
@@ -19,13 +19,8 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
     const { profileImage, username, role, name } = loggedInUser;
 
     const [postComments, setPostComments] = useState(post.postComments);
-
-    // selectedFile will contain the file that is selected
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
-
-    // state to show or hide post options list
     const [showPostOptions, setShowPostOptions] = useState(false);
 
     // var that will tell either the post is liked or not by the currently loggedIn user
@@ -35,7 +30,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
         })
     });
 
-    // state that will contain a boolean to either show or hide the post likes persons list
+    
     const [showLikesList, setShowLikesList] = useState(false);
 
     // using custom hook useClickOutside for postOptions list
@@ -46,17 +41,13 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
     }, showLikesList);
 
     const [myComment, setMyComment] = useState('');
-
-    // state to show or hide emoji picker
     const [showPicker, setShowPicker] = useState(false);
-
-    // state that will tell either to show or hide the comment section
     const [showCommentsSection, setShowCommentsSection] = useState(false);
 
     // reference of of myComment text input box
     const myCommentInputRef = useRef();
 
-    // state that contain either the post options button is visible or not
+    
     const [isPostOptionsBtnVisible, setIsPostOptionsBtnVisible] = useState(false);
 
     // using custom hook useClickOutside for postOptions list
@@ -67,7 +58,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
     }, isPostOptionsBtnVisible); 
 
 
-    // state that will contian boolean either to show the post edit modal or hide
+    
     const [showEditPostModal, setShowEditPostModal] = useState(false);
 
 
@@ -76,11 +67,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
 
     // getting user's id from url(if present)
     const { profileUserId } = useParams();
-
-    // state to hide or show loader from post comment button
     const [showLoader, setShowLoader] = useState(false); 
-
-
     const [playLikeSound] = useSound(likeSound);
 
 
@@ -220,17 +207,10 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
                 postLikes.splice(ind,1);
                 
             }else{
-                // postLikes.push(loggedInUser._id);
                 postLikes.push(loggedInUser);
             }
             setLiked(!liked);
 
-            // calling fetchPosts utility function to fetch updated posts from backend to reflect on UI
-            // if(profileUserId){
-            //     fetchPosts(setProfilePosts, profileUserId, pageNo, true);
-            // }else{
-            //     fetchPosts(setPosts, undefined, pageNo, true);
-            // }
 
 
 
@@ -242,9 +222,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
             // if the user who liked on post is not same as the postAuthor then only create notification and send it in realtime to the postAuthor
             if(loggedInUser._id!==postAuthor._id && !liked){
 
-                let formatedName = name.split(' ').map((item)=>{
-                    return item[0].toUpperCase()+item.slice(1)
-                }).join(' ')
+                let formatedName = formatName(name);
 
 
                 let notificationTextType = 'Post.';
@@ -367,9 +345,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
             // if the user who comment on post is not same as the postAuthor then only create notification and send it in realtime to the postAuthor
             if(loggedInUser._id!==postAuthor._id){
 
-                let formatedName = name.split(' ').map((item)=>{
-                    return item[0].toUpperCase()+item.slice(1)
-                }).join(' ')
+                let formatedName = formatName(name);
 
 
                 let notificationTextType = 'Post.';
@@ -449,9 +425,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
                         <Link to={`/profile/${postAuthor._id}`} className='link-text-decoration'>
                             <h4>
                                 {
-                                    postAuthor.name.split(' ').map((item)=>{
-                                        return item[0].toUpperCase()+item.slice(1)
-                                    }).join(' ')
+                                    formatName(postAuthor.name)
                                 }
                             </h4>
                         </Link>
@@ -564,9 +538,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
                                                     }
                                                     <h5>
                                                         {
-                                                            postLike.name.split(' ').map((item)=>{
-                                                                return item[0].toUpperCase()+item.slice(1)
-                                                            }).join(' ')
+                                                            formatName(postLike.name)
                                                         }
                                                     </h5>
                                                 </div>
@@ -673,7 +645,7 @@ const SinglePost = ( { post, loggedInUser, pageNo, fromNotificationDetails } )=>
                             postComments.length
                             ?
                             postComments.sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt)).map((postComment)=>{
-                                return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor} postComments={postComments} setPostComments={setPostComments} pageNo={pageNo}/>
+                                return <SingleComment key={postComment._id} postComment={postComment} postId={_id} postAuthor={postAuthor} postComments={postComments} setPostComments={setPostComments}/>
                             })
                         
                             :

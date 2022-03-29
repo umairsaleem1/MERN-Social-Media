@@ -9,8 +9,7 @@ const Provider = ( { children } )=>{
     // state that will contain posts to show on profile page
     const [profilePosts, setProfilePosts] = useState([]);
 
-    const [morePostsToSkip, setMorePostsToSkip] = useState(0);
-    const [moreProfilePostsToSkip, setMoreProfilePostsToSkip] = useState(0);
+    const [newPostsAvailable, setNewPostsAvailable] = useState(false);
 
     // state that will contain currently logged in user data fetched from backend
     const [user, setUser] = useState(undefined);
@@ -63,7 +62,7 @@ const Provider = ( { children } )=>{
     
 
     return(
-        <Context.Provider value={[posts, setPosts, user, setUser, profilePosts, setProfilePosts, socketRef, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingChatIds, setTypingChatIds, selectedConversationId, setSelectedConversationId, selectedConversationInfo, setSelectedConversationInfo, chats, setChats, messages, setMessages, isRecording, setIsRecording, recordingChatIds, setRecordingChatIds, chatHistoryFetched, setChatHistoryFetched, notifications, setNotifications, moreNotificationsToSkip, setMoreNotificationsToSkip, unreadNotificationsPresent, setUnreadNotificationsPresent, unreadMessagesPresent, setUnreadMessagesPresent, messagesNotifications, setMessagesNotifications, morePostsToSkip, setMorePostsToSkip, moreProfilePostsToSkip, setMoreProfilePostsToSkip]}>
+        <Context.Provider value={[posts, setPosts, user, setUser, profilePosts, setProfilePosts, socketRef, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingChatIds, setTypingChatIds, selectedConversationId, setSelectedConversationId, selectedConversationInfo, setSelectedConversationInfo, chats, setChats, messages, setMessages, isRecording, setIsRecording, recordingChatIds, setRecordingChatIds, chatHistoryFetched, setChatHistoryFetched, notifications, setNotifications, moreNotificationsToSkip, setMoreNotificationsToSkip, unreadNotificationsPresent, setUnreadNotificationsPresent, unreadMessagesPresent, setUnreadMessagesPresent, messagesNotifications, setMessagesNotifications, newPostsAvailable, setNewPostsAvailable]}>
             {children}
         </Context.Provider>
     );

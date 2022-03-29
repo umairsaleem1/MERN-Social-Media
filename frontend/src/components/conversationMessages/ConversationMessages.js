@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import ConversationMessage from '../conversationMessage/ConversationMessage';
 import SendMessage from '../sendMessage/SendMessage';
 import ImageMessagePreview from '../imageMessagePreview/ImageMessagePreview';
 import Context from '../../context/Context';
 import './conversationMessages.css';  
+import 'react-toastify/dist/ReactToastify.css';
 
 const ConversationMessages = ( )=>{
 
@@ -12,11 +14,8 @@ const ConversationMessages = ( )=>{
 
     // ######## States for text/image send component #########
 
-    // state that will contain text input field value of message to send
     const [message, setMessage] = useState('');
-    // selectedFile will contain the file that is selected to send
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
 
 
@@ -86,6 +85,10 @@ const ConversationMessages = ( )=>{
 
             }catch(e){
                 setShowLoader(false);
+                toast.error('Oops! some problem occurred', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
         }
@@ -107,6 +110,7 @@ const ConversationMessages = ( )=>{
 
 
     return(
+        <>
         <div className='conversation-messages-wrapper'>
             <div className='conversation-messages' ref={conversationMessagesRef}>
                 {
@@ -120,7 +124,7 @@ const ConversationMessages = ( )=>{
                     :
                         showLoader
                         ?
-                        <img src='/images/spiner2.gif' alt='loader' style={{position:'absolute', top:'44%', left: '45%', height:'60px', width: '60px'}} />
+                        <img src='/images/spiner2.gif' className='conversation-loader' alt='loader' />
                         :
                         null 
                 }
@@ -144,6 +148,8 @@ const ConversationMessages = ( )=>{
                 preview && <ImageMessagePreview selectedFile={selectedFile} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview} message={message} setMessage={setMessage}/>
             }
         </div>
+        <ToastContainer theme='colored'/>
+        </>
     );
 }
 

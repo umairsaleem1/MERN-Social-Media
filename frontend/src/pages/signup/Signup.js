@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,30 +15,23 @@ import checkUsernameAvailable from '../../utils/checkUsernameAvailable';
 
 
 const Signup = ()=>{
-    // selectedFile will contain the file that is selected
+
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file
     const [preview, setPreview] = useState();
-
-    // state to hold form field values
     const [values, setValues] = useState({name:'', email:'', password:'', cpassword:'', username:'', bio:''});
-
     // state for field validation
     const [focused, setFocused] = useState({name:'false', email:'false', password:'false', cpassword:'false', username:'false'});
-    
-    // state that contain boolean to eihter show the social media links modal or not
     const [showSocialModal, setShowSocialModal] = useState(false);
-
-    // state that will contain the social links
     const [socialLinks, setSocialLinks] = useState({facebook:'', instagram:'', twitter:''});
-
-    // state to hide or show the signup button loader depending upon the state value(loader will be visible when the request to backend is made untill the response is received)
     const [showSignupLoader, setShowSignupLoader] = useState(false);
-
-    // state to hide or show the username field loader(lodaer will be visible when the the request to backend is made untill the response is received)
     const [showUsernameLoader, setShowUsernameLoader] = useState(false);
 
     const navigate = useNavigate();
+
+
+    useEffect(()=>{
+        document.title = 'Signup';
+    }, [])
     
 
     // References of password, confirm password field & password hide, confirm password hide icon
@@ -76,7 +69,6 @@ const Signup = ()=>{
             validateFieldLabelColor(e);
         }
         if(e.target.name==='username'){
-            // calling the utility function to check whether the username is available the user is typing
             checkUsernameAvailable(e, usernameSpanRef, setShowUsernameLoader);
         }
     }
@@ -84,7 +76,6 @@ const Signup = ()=>{
     // handler that will be called when the input field gets blurred
     const handleFieldBlur = (e)=>{
         setFocused({...focused, [e.target.name]:'true'});
-        // calling the utility function the manage the color of input label & icon
         validateFieldLabelColor(e, true);
     }
     

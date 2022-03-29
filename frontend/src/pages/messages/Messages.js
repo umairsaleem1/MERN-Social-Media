@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Picker from 'emoji-picker-react';
+import { ToastContainer, toast } from 'react-toastify';
 import Navbar from '../../components/navbar/Navbar';
 import ConversationOverview from '../../components/conversationOverview/ConversationOverview';
 import ConversationHeader from '../../components/conversationHeader/ConversationHeader';
@@ -13,13 +14,16 @@ import authenticateUser from '../../utils/authenticateUser';
 import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
 import { useSocket } from '../../utils/useSocket';
 import { useJoinChats } from '../../utils/useJoinChats';
+import useWindowDimensions from '../../utils/useWindowDimensions';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './messages.css'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 const Messages = ()=>{
-
+ 
     // getting values & methods from global state
-    const [, , user, setUser, , , , , , , , , , , setSelectedConversationId, , setSelectedConversationInfo, chats, setChats, , , , , , , chatHistoryFetched, , , , , , , setUnreadNotificationsPresent, unreadMessagesPresent, setUnreadMessagesPresent, , setMessagesNotifications] = useContext(Context);
+    const [, , user, setUser, , , , , , , , , , , setSelectedConversationId, , setSelectedConversationInfo, chats, setChats, , , , , , , chatHistoryFetched, , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent, , setMessagesNotifications] = useContext(Context);
 
 
     const [showUpdateGrp, setShowUpdateGrp] = useState(false);
@@ -35,7 +39,16 @@ const Messages = ()=>{
     useJoinChats(); 
 
 
+    // using custom hook to get width of window
+    const { width } = useWindowDimensions();
 
+
+
+
+
+    useEffect(()=>{
+        document.title = 'Messages';
+    }, [])
 
     // making call to backend to check if any new notifications present which the user has not opened yet or not(to show update indicator on top if the use has not opened the new notifications yet)
     useEffect(()=>{
@@ -86,9 +99,9 @@ const Messages = ()=>{
         // making request to backend to fetch notifications
         const fetchMessagesNotifications = async ()=>{
             try{
-                let res = await fetch(`/notifications/?type=${"message"}`, {
+                let res = await fetch(`/notifications?type=${"message"}`, {
                         credentials: 'include'
-                });
+                }); 
         
                 if(!res.ok){
                     throw new Error(res.statusText);
@@ -98,6 +111,10 @@ const Messages = ()=>{
                 setMessagesNotifications(data.notifications);                        
         
             }catch(e){
+                toast.error('Oops! some problem occurred in fetching latest messages', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
         }
@@ -122,17 +139,13 @@ const Messages = ()=>{
     
     //############ States from create new group component ####################
 
-    // state to show or hide the createNewGroup component
     const [showCreateGrp, setShowCreateGrp] = useState(false);
     // state to show or hide the emoji picker for group subject
     const [showPicker1, setShowPicker1] = useState(false);
     // state to show or hide the emoji picker for group description
     const [showPicker2, setShowPicker2] = useState(false);
-    // selectedFile will contain the file that is selected as group icon
     const [selectedFile, setSelectedFile] = useState();
-    // preview will contain the url of selected file of group icon
     const [preview, setPreview] = useState();
-    // state that will contain createNewGroup's subjec & desc field values
     const [grpInfo, setGrpInfo] = useState({subject:'', desc:'',});
     // state that will contain value of searchInput in createNewGroup component
     const [searchGrpUserVal, setSearchGrpUserVal] = useState('');
@@ -142,7 +155,6 @@ const Messages = ()=>{
     const [showGrpSearchLoader, setShowGrpSearchLoader] = useState(false);
     // state that will contain users selected to add in new group
     const [addedGrpUsers, setAddedGrpUsers] = useState([]);
-    // state to show or hide create group button loader
     const [showCreateGrpLoader, setShowCreateGrpLoader] = useState(false)
 
 
@@ -186,13 +198,11 @@ const Messages = ()=>{
 
     // ################## States for search user for chat component ################
 
-    // state to show or hide the chatSearchUser component
     const [showChatSearch, setShowChatSearch] = useState(false);
     // state that will contain value of searchInput in searchUserForChat component
     const [searchedChatUserVal, setSearchedChatUserVal] = useState('');
     // state that will contain all matched users(if any) after searching in createNewGroup component
     const [searchedChatUsers, setSearchedChatUsers] = useState([]);
-    // state to show or hide searchUsertoChat loader
     const [showChatSearchLoader, setShowChatSearchLoader] = useState(false);
 
 
@@ -302,13 +312,19 @@ const Messages = ()=>{
     const addUserToGrp = (newUser)=>{
         // checking the clicked user is same who created the group if yes then return
         if(newUser._id===user._id){
-            alert('You are already in this group');
+            toast.error('You are already in this group', {
+                position:"top-center",
+                autoClose:3000
+            });
             return;
         }
         // checking user already present in grp or not
         for(let u of addedGrpUsers){ 
             if(u._id===newUser._id){
-                alert('User already added');
+                toast.error('User already added', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 return;
             }
         }
@@ -328,7 +344,10 @@ const Messages = ()=>{
         event.preventDefault();
 
         if(!grpInfo.subject.trim()){
-            alert('Please enter group subject');
+            toast.error('Please enter group subject', {
+                position:"top-center",
+                autoClose:3000
+            });
             return;
         }
 
@@ -377,7 +396,6 @@ const Messages = ()=>{
             setSelectedConversationId(data.savedChat._id);
             setShowConversation(true);
 
-            console.log(data);
         }catch(e){
             setShowCreateGrpLoader(false);
             console.log(e);
@@ -413,7 +431,10 @@ const Messages = ()=>{
     // handler that will be called when clicked on any user result in search user component
     const handleChatSearchUserClick = async (person)=>{
         if(person._id===user._id){
-            alert('You cannot chat with yourself');
+            toast.error('You cannot chat with yourself', {
+                position:"top-center",
+                autoClose:3000
+            });
             return;
         }
 
@@ -480,6 +501,10 @@ const Messages = ()=>{
             setShowConversation(true);
 
         }catch(e){
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -490,7 +515,7 @@ const Messages = ()=>{
         <>
             <Navbar/>
             <div className='messages-page'>
-                <div className='all-conversations-container'>
+                <div className='all-conversations-container' style={width<=670 ? !showConversation ? {width:'100%'} : {width:'0%'} : null}>
                     <div className='all-conversations-header'>
                         <Link to='/profile'>
                             <img src={user.profileImage} alt='profileImage' />
@@ -563,9 +588,7 @@ const Messages = ()=>{
                                                     <img src={searchedChatUser.profileImage} alt='userAvatar' />
                                                     <h3>
                                                         {
-                                                            searchedChatUser.name.split(' ').map((item)=>{
-                                                                return item[0].toUpperCase()+item.slice(1)
-                                                            }).join(' ')
+                                                            formatName(searchedChatUser.name)
                                                         }
                                                     </h3>
                                                 </div>
@@ -613,7 +636,7 @@ const Messages = ()=>{
                                         <i className="far fa-grin" onClick={()=>setShowPicker1(!showPicker1)} style={showPicker1 ? {background:'#d1e1ff'} : null}></i>
                                         <input type='text' placeholder='Type group subject here...' name='subject' value={grpInfo.subject} onChange={handleGrpInputValueChange} ref={subjectInputRef} required />
                                         {
-                                            showPicker1 && <Picker pickerStyle={{ position: 'absolute', top:'-170px', left:'11%', zIndex:10}} onEmojiClick={onEmojiClick1}/>
+                                            showPicker1 && <Picker pickerStyle={width<=900 && width>670 ? {position: 'absolute', top:'-170px', left:'-5%', zIndex:10} : { position: 'absolute', top:'-170px', left:'11%', zIndex:10}} onEmojiClick={onEmojiClick1}/>
                                         }
                                     </div>
 
@@ -621,7 +644,7 @@ const Messages = ()=>{
                                         <i className="far fa-grin" onClick={()=>setShowPicker2(!showPicker2)} style={showPicker2 ? {background:'#d1e1ff'} : null}></i>
                                         <input type='text' placeholder='Type group description here...' name='desc' value={grpInfo.desc} onChange={handleGrpInputValueChange} ref={descInputRef} />
                                         {
-                                            showPicker2 && <Picker pickerStyle={{ position: 'absolute', top:'-225px', left:'11%', zIndex:10}} onEmojiClick={onEmojiClick2}/>
+                                            showPicker2 && <Picker pickerStyle={ width<=900 && width>670 ? {position: 'absolute', top:'-170px', left:'-5%', zIndex:10} : { position: 'absolute', top:'-225px', left:'11%', zIndex:10}} onEmojiClick={onEmojiClick2}/>
                                         }
                                     </div>
 
@@ -645,9 +668,7 @@ const Messages = ()=>{
                                                             <img src={searchedGrpUser.profileImage} alt='userAvatar' />
                                                             <h3>
                                                                 {
-                                                                    searchedGrpUser.name.split(' ').map((item)=>{
-                                                                        return item[0].toUpperCase()+item.slice(1)
-                                                                    }).join(' ')
+                                                                    formatName(searchedGrpUser.name)
                                                                 }
                                                             </h3>
                                                         </div>
@@ -672,9 +693,7 @@ const Messages = ()=>{
                                                             <img src={addedGrpUser.profileImage} alt='userAvatar' />
                                                             <p>
                                                                 {
-                                                                    addedGrpUser.name.split(' ').map((item)=>{
-                                                                        return item[0].toUpperCase()+item.slice(1)
-                                                                    }).join(' ')
+                                                                    formatName(addedGrpUser.name)
                                                                 }
                                                             </p>
                                                             <span onClick={()=>removeUserFromGrp(addedGrpUser._id)}>
@@ -731,9 +750,10 @@ const Messages = ()=>{
                     </div>
                 }
             </div>
+            <ToastContainer theme='colored'/>
         </>
         :
-        null
+        <img src='/images/spiner2.gif' alt='loader' className='messages-page-loader' />
     );
 }
 

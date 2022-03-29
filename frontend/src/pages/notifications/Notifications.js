@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { ToastContainer, toast } from 'react-toastify';
 import Navbar from '../../components/navbar/Navbar';
 import { NotificationSkeleton } from '../../components/skeletons/Skeletons';
 import NoPostOrFollow from '../../components/noPostOrFollow/NoPostOrFollow';
@@ -12,6 +13,7 @@ import { useSocket } from '../../utils/useSocket';
 import { useJoinChats } from '../../utils/useJoinChats';
 import Context from '../../context/Context'; 
 import './notifications.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Notifications = ()=>{
 
@@ -19,18 +21,10 @@ const Notifications = ()=>{
     const [, , user, setUser, , , , , , , , , , , , , , , , , , , , , , , , notifications, setNotifications, moreNotificationsToSkip, , unreadNotificationsPresent, setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
 
 
-    // state that will contain boolean that either request to fetch notification from backend is completed or not
     const [notificationFetchingCompleted, setNotificationFetchingCompleted] = useState(false);
-    // state that will contain PageNo to fetch notifications from backend(1 means first 10, 2 means next 10, 3 means next 10 notifications after 20 and so on)
     const [pageNo, setPageNo] = useState(1);
-    // state that will contain boolean that will show either there has left any more notifications to show on notifications page fetching from database or not
     const [hasMoreNotifications, setHasMoreNotifications] = useState(true);
-
-
-
-    // state to show notification details(e.g which post, user) when clicked on any notification or hide the notification details component
     const [viewNotificationDetails, setViewNotificationDetails] = useState(false);
-
     const [clickedNotification, setClickedNotification] = useState(null);
 
 
@@ -51,7 +45,12 @@ const Notifications = ()=>{
 
 
 
-    
+
+
+
+    useEffect(()=>{
+        document.title = 'Notifications';
+    }, [])
 
 
     useEffect(()=>{
@@ -83,7 +82,7 @@ const Notifications = ()=>{
                         credentials: 'include'
                     });
         
-                if(!res.ok){
+                if(!res.ok){ 
                     throw new Error(res.statusText);
                 }
         
@@ -99,6 +98,10 @@ const Notifications = ()=>{
                 
         
             }catch(e){
+                toast.error('Oops! some problem occurred', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
         }
@@ -110,7 +113,7 @@ const Notifications = ()=>{
             setNotificationFetchingCompleted(true);
         }, 3000)
         
-    }, [pageNo, setNotifications])
+    }, [pageNo, setNotifications, moreNotificationsToSkip])
 
 
 
@@ -195,9 +198,10 @@ const Notifications = ()=>{
                     viewNotificationDetails && <NotificationDetails notification={clickedNotification} setViewNotificationDetails={setViewNotificationDetails}/>
                 }
             </div>
+            <ToastContainer theme='colored'/>
             </>
         :
-        null
+        <img src='/images/spiner2.gif' alt='loader' className='notification-page-loader' />
     );
 }
 

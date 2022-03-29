@@ -32,6 +32,7 @@
     color: #06cf9c;
     margin-bottom: 3px;
     color: rgb(76, 180, 158);
+    font-size: 1rem;
 }
 .message-image-wrapper{
     width: 200px;
@@ -46,6 +47,7 @@
 .conversation-message p{
     color: #111b21;
     font-size: 16px;
+    text-align: left;
 }
 
 .conversation-message audio::-webkit-media-controls-panel {
@@ -63,4 +65,50 @@
     position: absolute;
     bottom: 5px;
     right: 8px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* #################### Responsive style ###################### */
+@media only screen and (max-width: 1000px){
+    .conversation-message{
+        max-width: 80%;
+    }
+}
+
+@media only screen and (max-width: 788px){
+    .conversation-message{
+        max-width: 90%;
+    }
+}
+
+@media only screen and (max-width: 717px){
+    .conversation-message{
+        max-width: 95%;
+    }
+}
+
+@media only screen and (max-width:575px){
+    .conversation-message{
+        max-width: 90%;
+    }
+}
+
+@media only screen and (max-width:370px){
+    .conversation-message{
+        max-width: 95%;
+    }
 }

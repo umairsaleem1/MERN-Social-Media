@@ -16,7 +16,7 @@ export const PostSkeleton = ()=>{
                     </div>
                 </div>
                 <div className='skeleton-post-middle'>
-                    <Skeleton height={200} />
+                    <Skeleton height='100%' />
                 </div>
                 <div className='skeleton-post-stats'>
                     <Skeleton height={30} width={30} circle={true} />

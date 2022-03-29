@@ -5,7 +5,7 @@
     /* background: #eae6df; */
     background: white
 }
-.conversation-messages{
+.conversation-messages{ 
     height: calc(100% - 65px);
     /* border: 2px solid red;  */
     overflow: auto;
@@ -26,6 +26,14 @@
     border-radius: 5px;
 }
 
+.conversation-loader{
+    position: absolute;
+    top: 44%;
+    left: 45%;
+    height: 60px;
+    width: 60px;
+}
+
 
 
 
@@ -41,4 +49,27 @@
     justify-content: center;
     align-items: center;
     color: #4e5e66;
+}
+
+
+
+
+
+
+
+/* ##################### Responsive style ##################### */
+
+@media only screen and (max-width:445px){
+    .conversation-messages{
+        padding: 20px 20px;
+    }
+}
+
+@media only screen and (max-width:396px){
+    .conversation-messages{
+        padding: 20px 15px;
+    }
+    .conversation-loader{
+        left: 40%;
+    }
 }

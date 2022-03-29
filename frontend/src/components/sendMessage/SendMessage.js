@@ -19,9 +19,6 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
 
     const [playLikeSound] = useSound(likeSound);
 
-
-
-
     // state to show or hide the emoji picker of text/image component
     const [showPicker, setShowPicker] = useState(false);
 
@@ -81,6 +78,7 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
 
     // New instance of MicRecorder
     const [micRecorder, setMicRecorder] = useState(new MicRecorder({bitRate:128}));
+    console.log(setMicRecorder);
 
 
 
@@ -289,20 +287,25 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
             setSelectedFile(undefined);
             setPreview(undefined);
             
-
+            const newMessage = {
+                ...data.savedMessage,
+                messageSender: {
+                    _id: user._id,
+                    name: user.name
+                }
+            }
             setMessages((messages)=>{
-                return [...messages, data.savedMessage]
+                return [...messages, newMessage]
             });
+
 
 
             playLikeSound();
             
 
-            // // emiting event 'send-message' along with new sent message, slectedConversationId(room id) & recordedTime of audio(if voice message else will be undefined) as data
-            // socketRef.current.emit('send-message', data.savedMessage, String(selectedConversationId), recordedTime);
 
             // calling updateChatOverview utility function to show recent message on ConversationOverview
-            updateChatOverview(setChats, selectedConversationId, data.savedMessage, recordedTime);
+            updateChatOverview(setChats, selectedConversationId, newMessage, recordedTime);
 
 
 
@@ -341,8 +344,7 @@ const SendMessage = ( { selectedFile, setSelectedFile, setPreview, message, setM
             const notiData = await notiRes.json();
                 
             // emiting event 'send-message' along with new sent message, slectedConversationId(room id) & recordedTime of audio(if voice message else will be undefined) as data
-            socketRef.current.emit('send-message', data.savedMessage, String(selectedConversationId), recordedTime, notiData.savedNotification);
-            // socketRef.current.emit('likeNotification', notiData.savedNotification)
+            socketRef.current.emit('send-message', newMessage, String(selectedConversationId), recordedTime, notiData.savedNotification);
             
 
         }catch(e){

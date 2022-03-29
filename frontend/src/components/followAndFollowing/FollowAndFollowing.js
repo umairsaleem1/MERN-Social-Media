@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Context from '../../context/Context';
 import followOrUnfollow from '../../utils/followOrUnfollow';
+import formatName from '../../utils/formatName';
 import './followAndFollowing.css';
 
 const FollowAndFollowing = ( {follow} )=>{
@@ -43,9 +44,7 @@ const FollowAndFollowing = ( {follow} )=>{
                 <Link to={`/profile/${_id}`} className='link-text-decoration'>
                     <p>
                         {
-                            name.split(' ').map((item)=>{
-                                return item[0].toUpperCase()+item.slice(1)
-                            }).join(' ')
+                            formatName(name)
                         }
                     </p>
                 </Link>

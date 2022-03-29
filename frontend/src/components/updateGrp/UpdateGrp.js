@@ -2,12 +2,15 @@ import React, { useState, useContext, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
+import { ToastContainer, toast } from 'react-toastify';
 import GrpSettings from '../grpSettings/GrpSettings';
 import UpdateGrpParticipant from '../updateGrpParticipant/UpdateGrpParticipant';
 import searchUser from '../../utils/searchUser';
 import { useClickOutside } from '../../utils/useClickOutside';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './updateGrp.css'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
@@ -132,10 +135,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         setShowGrpIconLoader(true);
         try{
-            const formatedName = user.name.split(' ').map((item)=>{
-                return item[0].toUpperCase()+item.slice(1)
-            }).join(' ');
-
+            const formatedName = formatName(user.name);
 
             let formData = new FormData();
             formData.append('grpAvatar', e.target.files[0]);
@@ -179,9 +179,17 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
             // emiting grpIconUpdate event to notify all connected socket about this update
             socketRef.current.emit('grpIconUpdate', String(selectedConversationInfo._id), data.updatedChat, newMessage);
             
+            toast.success('Group Icon updated successfully', {
+                position:"top-center",
+                autoClose:3000
+            });
 
         }catch(err){
             setShowGrpIconLoader(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(err)
         }
     }
@@ -199,9 +207,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         setShowGrpSubjectLoader(true);
         try{
-            const formatedName = user.name.split(' ').map((item)=>{
-                return item[0].toUpperCase()+item.slice(1)
-            }).join(' ');
+            const formatedName = formatName(user.name);
 
             let formData = new FormData();
             formData.append('grpSubject', updateGrpSubjectVal.trim());
@@ -255,6 +261,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         }catch(e){
             setShowGrpSubjectLoader(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -267,9 +277,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         setShowGrpDescLoader(true);
         try{
-            const formatedName = user.name.split(' ').map((item)=>{
-                return item[0].toUpperCase()+item.slice(1)
-            }).join(' ');
+            const formatedName = formatName(user.name);
 
             let formData = new FormData();
             formData.append('grpDesc', updateGrpDescVal.trim());
@@ -323,6 +331,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         }catch(e){
             setShowGrpDescLoader(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -352,7 +364,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
         // checking the clicked user is already present in this group or not
         for(let alreadyPresentUser of users){
             if(alreadyPresentUser._id===newParticipant._id){
-                alert('User is already present in this group');
+                toast.error('User is already present in this group', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 return;
             }
         }
@@ -361,7 +376,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
         // checking user already selected to add in this group or not
         for(let newParticipantToAdd of newParticipantsToAdd){ 
             if(newParticipantToAdd._id===newParticipant._id){
-                alert('User already selected to add in this group');
+                toast.error('User already selected to add in this group', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 return;
             }
         }
@@ -387,9 +405,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
                 return participant._id;
             })
 
-            const formatedName = user.name.split(' ').map((item)=>{
-                return item[0].toUpperCase()+item.slice(1)
-            }).join(' ');
+            const formatedName = formatName(user.name);
 
             let formData = new FormData();
             formData.append('newParticipants', newParticipantsToAddIds);
@@ -417,9 +433,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
             const newMessages = [];
             newParticipantsToAdd.forEach((newPrt, index)=>{
 
-                const formatedPrtName = newPrt.name.split(' ').map((item)=>{
-                    return item[0].toUpperCase()+item.slice(1)
-                }).join(' ');
+                const formatedPrtName = formatName(newPrt.name)
 
                 const newMessage = {
                     _id: new Date(Date.now() + index),
@@ -450,6 +464,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
 
         }catch(e){
             setShowAddNewParticipantLoader(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -524,6 +542,10 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
         }catch(e){
             setShowExitGroupLoader(false);
             setShowExitGroupModal(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -570,11 +592,16 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
         }catch(e){
             setShowDeleteGroupLoader(false);
             setShowDeleteGroupModal(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
 
     return(
+        <>
         <motion.div className='update-grp-container'
             initial={{x:'100%'}}
             animate={{x:0}}
@@ -750,9 +777,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
                                                     <img src={searchedParticipant.profileImage} alt='profileImage' />
                                                     <h3>
                                                         {
-                                                            searchedParticipant.name.split(' ').map((item)=>{
-                                                                return item[0].toUpperCase()+item.slice(1)
-                                                            }).join(' ')
+                                                            formatName(searchedParticipant.name)
                                                         }
                                                     </h3>
                                                 </div>
@@ -774,9 +799,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
                                                         <img src={participantToAdd.profileImage} alt='userAvatar' />
                                                         <p>
                                                             {
-                                                                participantToAdd.name.split(' ').map((item)=>{
-                                                                    return item[0].toUpperCase()+item.slice(1)
-                                                                }).join(' ')
+                                                                formatName(participantToAdd.name)
                                                             }
                                                         </p>
                                                         <span onClick={()=>removeParticipantFromNewParticipantToAdd(participantToAdd._id)}>
@@ -817,7 +840,7 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
                     <div className='update-grp-participants-list'>
                         {
                             users.map((grpUser)=>{
-                                return <UpdateGrpParticipant grpUser={grpUser} grpAdmins={grpAdmins} grpSubject={grpSubject} users={users}/>
+                                return <UpdateGrpParticipant key={grpUser._id} grpUser={grpUser} grpAdmins={grpAdmins} grpSubject={grpSubject} users={users}/>
                             })
                         }
                         
@@ -890,6 +913,8 @@ const UpdateGrp = ( { setShowUpdateGrp, setShowConversation } )=>{
                 </div>
             </div>
         </motion.div>
+        <ToastContainer theme='colored'/>
+        </>
     );
 }
 

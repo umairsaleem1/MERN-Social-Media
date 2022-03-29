@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import parse from 'html-react-parser';
 import { ToastContainer, toast } from 'react-toastify';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './conversationOverview.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -161,13 +162,9 @@ const ConversationOverview = ( { showConversation, setShowConversation, chat, se
                             :
                                 user._id===users[0]._id
                                 ?
-                                users[1].name.split(' ').map((item)=>{
-                                    return item[0].toUpperCase()+item.slice(1)
-                                }).join(' ')
+                                formatName(users[1].name)
                                 :
-                                users[0].name.split(' ').map((item)=>{
-                                    return item[0].toUpperCase()+item.slice(1)
-                                }).join(' ')
+                                formatName(users[0].name)
                         }
                     </p>
                     {

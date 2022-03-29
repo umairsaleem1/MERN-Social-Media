@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import AuthMenu from '../../components/authMenu/AuthMenu';
@@ -17,6 +17,11 @@ const ResetPassword = ()=>{
     const { token } = useParams();
 
     const navigate = useNavigate();
+
+
+    useEffect(()=>{
+        document.title = 'Reset Password';
+    }, [])
 
     // References of password, confirm password field & password hide, confirm password hide icon
     const passRef = useRef();

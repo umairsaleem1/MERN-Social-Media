@@ -5,7 +5,7 @@ import { useClickOutside } from '../../utils/useClickOutside';
 
 
 const SocialLinksModal = ( { setShowSocialModal, socialLinks, setSocialLinks } )=>{
-    // state that will contain the links that the user will add
+    
     const [links, setLinks] = useState({facebook:'', instagram:'', twitter:''});
     
     // using cutom hook useClickOutside

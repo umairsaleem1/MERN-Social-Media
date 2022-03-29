@@ -134,7 +134,7 @@ router.put('/notifications', auth, async (req, res)=>{
 router.put('/notifications/:notificationId', auth, async (req, res)=>{
     try{
         const { notificationId } = req.params;
-        const { type } = req.query;
+        const { type } = req.query; 
 
         if(type==='other'){
             await Notification.findByIdAndUpdate({_id:notificationId}, {isNotificationViewed: true});

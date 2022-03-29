@@ -525,7 +525,8 @@ router.get('/messages/:chatId', auth, async (req, res)=>{
     try{
         const { chatId } = req.params;
 
-        const chat = await Chat.findOne({_id:chatId}).populate('messages'); 
+        // const chat = await Chat.findOne({_id:chatId}).populate('messages'); 
+        const chat = await Chat.findOne({_id:chatId}).populate({path: 'messages', populate: {path:'messageSender', select:{name:1}}}); 
 
         res.status(200).json({
             chat: chat 

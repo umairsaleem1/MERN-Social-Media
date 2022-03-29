@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,6 +20,11 @@ const Login = ()=>{
     const [showLoginLoader, setShowLoginLoader] = useState(false);
 
     const navigate = useNavigate();
+
+
+    useEffect(()=>{
+        document.title = 'Login';
+    }, [])
 
 
 
@@ -91,7 +96,7 @@ const Login = ()=>{
             });
 
             setTimeout(()=>{
-                navigate('/'); 
+                navigate('/');  
             }, 2100); 
 
         }catch(e){

@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { motion } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
 import { useClickOutside } from '../../utils/useClickOutside';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './updateGrpParticipant.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
 
@@ -116,6 +119,10 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
 
             }catch(e){
                 setShowToggleAdminModal(false);
+                toast.error('Oops! some problem occurred', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
 
@@ -179,6 +186,10 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
 
             }catch(e){
                 setShowToggleAdminModal(false);
+                toast.error('Oops! some problem occurred', {
+                    position:"top-center",
+                    autoClose:3000
+                });
                 console.log(e);
             }
         }
@@ -196,9 +207,7 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
     const handleRemoveUserConfirmClick = async ()=>{
         setShowRemoveUserLoader(true);
         try{
-            const formatedName = user.name.split(' ').map((item)=>{
-                return item[0].toUpperCase()+item.slice(1)
-            }).join(' ');
+            const formatedName = formatName(user.name);
 
 
             let formData = new FormData();
@@ -257,6 +266,10 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
         }catch(e){
             setShowRemoveUserLoader(false);
             setShowRemoveUserModal(false);
+            toast.error('Oops! some problem occurred', {
+                position:"top-center",
+                autoClose:3000
+            });
             console.log(e);
         }
     }
@@ -270,9 +283,7 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
             <img src={grpUser.profileImage} alt='userAvatar' />
             <p>
             {
-                grpUser.name.split(' ').map((item)=>{
-                    return item[0].toUpperCase()+item.slice(1)
-                }).join(' ')
+                formatName(grpUser.name)
             }
             </p>
             {
@@ -322,7 +333,7 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
 
         <div className='remove-user-modal-container' style={showRemoveUserModal ? null : {display:'none'}}>
             <div className='remove-user-modal' ref={removeUserModal}>
-                <p>Remove {grpUser.name.split(' ').map((item)=> item[0].toUpperCase()+item.slice(1)).join(' ')} from "{grpSubject}" group?</p>
+                <p>Remove {formatName(grpUser.name)} from "{grpSubject}" group?</p>
                 <div className='remove-user-modal-btns'>
                     <button className='cancel-btn' onClick={()=>setShowRemoveUserModal(false)}>Cancel</button>
                     <button className='confirm-btn' onClick={handleRemoveUserConfirmClick} disabled={showRemoveUserLoader}>
@@ -339,6 +350,7 @@ const UpdateGrpParticipant = ( { grpUser, grpAdmins, grpSubject, users } )=>{
                 </div>
             </div>
         </div>
+        <ToastContainer theme='colored'/>
         </>
     );
 }

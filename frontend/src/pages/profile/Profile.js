@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import InfiniteScroll from 'react-infinite-scroll-component'; 
-import io from "socket.io-client";
 import Navbar from '../../components/navbar/Navbar';
 import CreatePost from '../../components/createPost/CreatePost';
 import SinglePost from '../../components/singlePost/SinglePost';
@@ -19,31 +18,27 @@ import checkNotificationsUpdate from '../../utils/checkNotificationsUpdate';
 import checkMessagesUpdate from '../../utils/checkMessagesUpdate';
 import { useSocket } from '../../utils/useSocket';
 import { useJoinChats } from '../../utils/useJoinChats';
+import formatName from '../../utils/formatName';
 import Context from '../../context/Context';
 import './profile.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = ()=>{
-    // state that will contain the name of active tab selected
+    
     const [activeTab, setActiveTab] = useState('posts'); 
 
     // getting values & methods from global state
-    const [, , user, setUser, profilePosts, setProfilePosts, socketRef, onlineUsers, setOnlineUsers, , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
+    const [, , user, setUser, profilePosts, setProfilePosts, socketRef, onlineUsers, , , , , , , , , , , , , , , , , , , , , , , , , setUnreadNotificationsPresent, , setUnreadMessagesPresent] = useContext(Context);
 
     // state that will contain profile data of which user's id is provided in the url
     const [profileUser, setProfileUser] = useState('');
-
-    // state that will contain boolean that either request to fetch post from backend is completed or not
     const [postFetchingCompleted, setPostFetchingCompleted] = useState(false);
 
     // state that will contain boolean either the logged in user is following the profile which he is visiting(opened) of the user
     const [isFollowing, setIsFollowing] = useState('');
-
-    // state that will contain PageNo to fetch posts from backend(1 means first 10, 2 means next 10, 3 means next 10 posts after 20 and so on)
     const [pageNo, setPageNo] = useState(1);
-
-    // state that will contain boolean that will show either there has left any more posts to show on profile page fetching from database or not
     const [hasMorePosts, setHasMorePosts] = useState(true);
+
 
 
     // calling custom hook for all the socket related stuff
@@ -52,6 +47,16 @@ const Profile = ()=>{
     useJoinChats();
 
 
+
+
+
+    useEffect(()=>{
+        if(profileUser){
+            document.title = profileUser.name.split(' ').map((item)=>{
+                return item[0].toUpperCase()+item.slice(1)
+            }).join(' ')
+        }
+    }, [profileUser])
 
     // making call to backend to check if any new notifications present which the user has not opened yet or not(to show update indicator on top if the use has not opened the new notifications yet)
     useEffect(()=>{
@@ -79,27 +84,6 @@ const Profile = ()=>{
 
     const navigate = useNavigate();
 
-
-    
-    // connecting socket instance(user) to backend & registering events if the socket(user) is not already connected
-    useEffect(()=>{
-        if(user){
-            if(!socketRef.current){
-                socketRef.current = io('http://localhost:8000');
-
-
-                socketRef.current.on('connect', ()=>{
-                    // firing newConnection event when socket(user) is successfylly connected to server along with user's id as data
-                    socketRef.current.emit('newConnection', user._id);
-                });
-
-                socketRef.current.on('onlineUsers', (users)=>{
-                    setOnlineUsers(users);
-                })
-
-            }
-        }
-    }, [socketRef, user, setOnlineUsers])
 
 
 
@@ -145,6 +129,7 @@ const Profile = ()=>{
     }
 
     useEffect(()=>{
+
         // making request to backend to fetch posts
         const fetchPosts = async ()=>{
             try{
@@ -294,6 +279,7 @@ const Profile = ()=>{
     const handleTabClick = (e)=>{
         setActiveTab(e.target.id);
     }
+
     return(
         user
         ?
@@ -352,9 +338,7 @@ const Profile = ()=>{
                     </div>
                     <h1>
                         {
-                            profileUser.name.split(' ').map((item)=>{
-                                return item[0].toUpperCase()+item.slice(1)
-                            }).join(' ')
+                            formatName(profileUser.name)
                         }
                     </h1>
                     {
@@ -485,9 +469,7 @@ const Profile = ()=>{
                     <div className='profile-about'>
                         <h2>
                             {
-                                profileUser.name.split(' ').map((item)=>{
-                                    return item[0].toUpperCase()+item.slice(1)
-                                }).join(' ')
+                                formatName(profileUser.name)
                             }
                         </h2>
                         {
